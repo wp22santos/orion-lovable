@@ -1,3 +1,12 @@
+export interface ApproachedPerson {
+  id: string;
+  name: string;
+  motherName: string;
+  rg: string;
+  cpf: string;
+  photos: string[];
+}
+
 export interface Approach {
   id: string;
   name: string;
@@ -7,6 +16,7 @@ export interface Approach {
   address: string;
   observations?: string;
   companions?: string[];
+  approachedPeople?: ApproachedPerson[];
   date: string;
   location: string;
   imageUrl?: string;
