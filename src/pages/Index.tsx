@@ -119,7 +119,7 @@ const Index = () => {
       address: data.address,
       observations: data.observations,
       companions: data.companions,
-      date: new Date().toLocaleString(),
+      date: new Date().toISOString(),
       location: data.address,
       imageUrl: data.imageUrl,
     };
@@ -127,6 +127,7 @@ const Index = () => {
     try {
       await indexedDBService.addApproach(newApproach);
       await loadApproaches();
+      setIsFormOpen(false);
       toast({
         title: "Sucesso",
         description: "Abordagem registrada com sucesso.",
