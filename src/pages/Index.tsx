@@ -7,6 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 import { indexedDBService, type Approach } from "@/services/indexedDB";
 import { v4 as uuidv4 } from "uuid";
 import type { SearchFilters } from "@/components/AdvancedSearchFilters";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const Index = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -16,6 +17,7 @@ const Index = () => {
   const [activeFilters, setActiveFilters] = useState<SearchFilters>({});
   const { toast } = useToast();
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     loadApproaches();
@@ -147,9 +149,9 @@ const Index = () => {
         onFilterChange={handleFilterChange}
       />
 
-      <main className="container py-8">
-        <div className="mb-6">
-          <h2 className="text-xl font-semibold text-gray-800">
+      <main className={`${isMobile ? 'px-4' : 'container'} py-4 md:py-8`}>
+        <div className="mb-4 md:mb-6">
+          <h2 className="text-lg md:text-xl font-semibold text-gray-800">
             {searchQuery || Object.keys(activeFilters).length > 0
               ? `Resultados da busca: ${filteredApproaches.length} encontrados`
               : "Últimas Abordagens"}

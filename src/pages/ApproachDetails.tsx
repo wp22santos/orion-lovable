@@ -62,7 +62,7 @@ const ApproachDetails = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <header className="bg-police-primary text-white sticky top-0 z-10 shadow-md">
-        <div className="container py-6">
+        <div className="px-4 md:container py-4 md:py-6">
           <Button
             variant="ghost"
             className="text-white hover:text-white/80"
@@ -74,10 +74,10 @@ const ApproachDetails = () => {
         </div>
       </header>
 
-      <main className="container py-8">
-        <Card className="p-6">
-          <div className="flex items-center gap-4 mb-6">
-            <div className="w-24 h-24 rounded-full bg-gray-200 overflow-hidden">
+      <main className="px-4 md:container py-4 md:py-8">
+        <Card className="p-4 md:p-6">
+          <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
+            <div className="w-20 h-20 md:w-24 md:h-24 rounded-full bg-gray-200 overflow-hidden">
               {approach.imageUrl ? (
                 <img
                   src={approach.imageUrl}
@@ -85,13 +85,13 @@ const ApproachDetails = () => {
                   className="w-full h-full object-cover"
                 />
               ) : (
-                <div className="w-full h-full flex items-center justify-center bg-police-primary text-white text-3xl">
+                <div className="w-full h-full flex items-center justify-center bg-police-primary text-white text-2xl md:text-3xl">
                   {approach.name.charAt(0)}
                 </div>
               )}
             </div>
             <div>
-              <h1 className="text-2xl font-bold">{approach.name}</h1>
+              <h1 className="text-xl md:text-2xl font-bold">{approach.name}</h1>
               <div className="text-gray-600 mt-1">
                 <div className="flex items-center gap-2">
                   <Calendar className="w-4 h-4" />
@@ -101,7 +101,7 @@ const ApproachDetails = () => {
             </div>
           </div>
 
-          <div className="grid gap-6">
+          <div className="grid gap-6 mt-6">
             <section>
               <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
                 <User className="w-5 h-5" />

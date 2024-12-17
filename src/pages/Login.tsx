@@ -25,15 +25,15 @@ const Login = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-      <Card className="w-full max-w-md p-6 space-y-6 animate-fade-in">
+      <Card className="w-full max-w-md p-4 md:p-6 space-y-6 animate-fade-in">
         <div className="text-center space-y-2">
           <div className="flex justify-center">
             <div className="p-3 rounded-full bg-blue-100">
               <Shield className="w-6 h-6 text-blue-600" />
             </div>
           </div>
-          <h1 className="text-2xl font-bold">Login</h1>
-          <p className="text-gray-500">
+          <h1 className="text-xl md:text-2xl font-bold">Login</h1>
+          <p className="text-sm md:text-base text-gray-500">
             Entre com suas credenciais para acessar o sistema
           </p>
         </div>
@@ -50,6 +50,7 @@ const Login = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+              className="h-12"
             />
           </div>
 
@@ -63,19 +64,20 @@ const Login = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
+              className="h-12"
             />
           </div>
 
           <Button
             type="submit"
-            className="w-full"
+            className="w-full h-12 text-base"
             disabled={loading}
           >
             {loading ? "Entrando..." : "Entrar"}
           </Button>
         </form>
 
-        <p className="text-sm text-center text-gray-500">
+        <p className="text-xs md:text-sm text-center text-gray-500">
           Credenciais de teste: policial@exemplo.com / 123456
         </p>
       </Card>
