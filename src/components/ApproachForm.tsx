@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { MapPin, Camera, User, Users } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 interface ApproachFormProps {
   isOpen: boolean;
@@ -12,6 +13,8 @@ interface ApproachFormProps {
 }
 
 export const ApproachForm = ({ isOpen, onClose, onSubmit }: ApproachFormProps) => {
+  const { toast } = useToast();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [formData, setFormData] = useState({
     name: "",
     motherName: "",
@@ -20,17 +23,40 @@ export const ApproachForm = ({ isOpen, onClose, onSubmit }: ApproachFormProps) =
     address: "",
     observations: "",
     companions: "",
+    imageUrl: "",
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(formData);
+    onSubmit({
+      ...formData,
+      companions: formData.companions ? formData.companions.split(",").map(c => c.trim()) : []
+    });
     onClose();
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleImageCapture = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFormData(prev => ({ ...prev, imageUrl: reader.result as string }));
+        toast({
+          title: "Foto capturada",
+          description: "A foto foi adicionada com sucesso.",
+        });
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   return (
@@ -137,16 +163,33 @@ export const ApproachForm = ({ isOpen, onClose, onSubmit }: ApproachFormProps) =
                 rows={4}
               />
             </div>
-            <div className="col-span-full">
+            <div className="col-span-full space-y-4">
+              <input
+                type="file"
+                ref={fileInputRef}
+                accept="image/*"
+                capture="environment"
+                onChange={handleImageChange}
+                className="hidden"
+              />
               <Button
                 type="button"
                 variant="outline"
                 className="w-full"
-                onClick={() => console.log("Implementar captura de foto")}
+                onClick={handleImageCapture}
               >
                 <Camera className="mr-2 h-4 w-4" />
                 Capturar Foto
               </Button>
+              {formData.imageUrl && (
+                <div className="relative w-32 h-32 mx-auto">
+                  <img
+                    src={formData.imageUrl}
+                    alt="Foto capturada"
+                    className="w-full h-full object-cover rounded-lg"
+                  />
+                </div>
+              )}
             </div>
           </div>
           <div className="flex justify-end gap-4">
