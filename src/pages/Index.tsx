@@ -26,10 +26,16 @@ const Index = () => {
   const loadApproaches = async () => {
     try {
       const data = await indexedDBService.getApproaches();
-      setApproaches(data);
-      applyFilters(data, searchQuery, activeFilters);
+      if (Array.isArray(data)) {
+        setApproaches(data);
+        applyFilters(data, searchQuery, activeFilters);
+      } else {
+        console.error("Dados inválidos recebidos:", data);
+        setApproaches([]);
+        setFilteredApproaches([]);
+      }
     } catch (error) {
-      console.error("Error loading approaches:", error);
+      console.error("Erro ao carregar abordagens:", error);
       toast({
         title: "Erro",
         description: "Não foi possível carregar as abordagens.",
@@ -39,17 +45,23 @@ const Index = () => {
   };
 
   const applyFilters = (data: Approach[], query: string, filters: SearchFilters) => {
+    if (!Array.isArray(data)) {
+      console.error("Dados inválidos para filtrar:", data);
+      return;
+    }
+
     let filtered = [...data];
 
     if (query) {
       const searchStr = query.toLowerCase();
       filtered = filtered.filter((approach) => {
+        if (!approach) return false;
         const searchableStr = `
-          ${approach.name} 
-          ${approach.motherName} 
-          ${approach.rg} 
-          ${approach.cpf} 
-          ${approach.address} 
+          ${approach.name || ''} 
+          ${approach.motherName || ''} 
+          ${approach.rg || ''} 
+          ${approach.cpf || ''} 
+          ${approach.address || ''} 
           ${approach.observations || ''} 
           ${approach.companions?.join(' ') || ''}
         `.toLowerCase();
@@ -60,38 +72,43 @@ const Index = () => {
     // Filtros avançados
     if (filters.name) {
       filtered = filtered.filter(a => 
-        a.name.toLowerCase().includes(filters.name!.toLowerCase())
+        a?.name?.toLowerCase().includes(filters.name!.toLowerCase())
       );
     }
     if (filters.rg) {
       filtered = filtered.filter(a => 
-        a.rg.includes(filters.rg!)
+        a?.rg?.includes(filters.rg!)
       );
     }
     if (filters.cpf) {
       filtered = filtered.filter(a => 
-        a.cpf.includes(filters.cpf!)
+        a?.cpf?.includes(filters.cpf!)
       );
     }
     if (filters.location) {
       filtered = filtered.filter(a => 
-        a.address.toLowerCase().includes(filters.location!.toLowerCase())
+        a?.address?.toLowerCase().includes(filters.location!.toLowerCase())
       );
     }
     if (filters.observations) {
       filtered = filtered.filter(a => 
-        a.observations?.toLowerCase().includes(filters.observations!.toLowerCase())
+        a?.observations?.toLowerCase().includes(filters.observations!.toLowerCase())
       );
     }
     if (filters.companion) {
       filtered = filtered.filter(a => 
-        a.companions?.some(c => 
+        a?.companions?.some(c => 
           c.toLowerCase().includes(filters.companion!.toLowerCase())
         )
       );
     }
 
-    filtered.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    filtered.sort((a, b) => {
+      const dateA = new Date(a.date).getTime();
+      const dateB = new Date(b.date).getTime();
+      return dateB - dateA;
+    });
+
     setFilteredApproaches(filtered);
   };
 
@@ -112,16 +129,16 @@ const Index = () => {
   const handleFormSubmit = async (data: any) => {
     const newApproach: Approach = {
       id: uuidv4(),
-      name: data.name,
-      motherName: data.motherName,
-      rg: data.rg,
-      cpf: data.cpf,
-      address: data.address,
-      observations: data.observations,
-      companions: data.companions,
+      name: data.name || '',
+      motherName: data.motherName || '',
+      rg: data.rg || '',
+      cpf: data.cpf || '',
+      address: data.address || '',
+      observations: data.observations || '',
+      companions: data.companions || [],
       date: new Date().toISOString(),
-      location: data.address,
-      imageUrl: data.imageUrl,
+      location: data.address || '',
+      imageUrl: data.imageUrl || '',
     };
 
     try {
@@ -133,7 +150,7 @@ const Index = () => {
         description: "Abordagem registrada com sucesso.",
       });
     } catch (error) {
-      console.error("Error saving approach:", error);
+      console.error("Erro ao salvar abordagem:", error);
       toast({
         title: "Erro",
         description: "Não foi possível salvar a abordagem.",
