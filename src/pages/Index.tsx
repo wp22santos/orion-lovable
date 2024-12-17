@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { SearchBar } from "@/components/SearchBar";
 import { ApproachCard } from "@/components/ApproachCard";
+import { ApproachForm } from "@/components/ApproachForm";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
+import { useToast } from "@/components/ui/use-toast";
 
-// Mock data - will be replaced with IndexedDB
 const mockApproaches = [
   {
     id: "1",
@@ -31,6 +32,8 @@ const mockApproaches = [
 const Index = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredApproaches, setFilteredApproaches] = useState(mockApproaches);
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const { toast } = useToast();
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
@@ -47,8 +50,15 @@ const Index = () => {
   };
 
   const handleNewApproach = () => {
-    // Will be implemented later for new approach creation
-    console.log("New approach clicked");
+    setIsFormOpen(true);
+  };
+
+  const handleFormSubmit = (data: any) => {
+    console.log("Form data:", data);
+    toast({
+      title: "Abordagem registrada",
+      description: "Os dados foram salvos com sucesso.",
+    });
   };
 
   return (
@@ -98,6 +108,12 @@ const Index = () => {
           )}
         </div>
       </main>
+
+      <ApproachForm
+        isOpen={isFormOpen}
+        onClose={() => setIsFormOpen(false)}
+        onSubmit={handleFormSubmit}
+      />
     </div>
   );
 };
