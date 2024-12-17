@@ -1,5 +1,6 @@
 import { CalendarDays, MapPin, Users } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import { useNavigate } from "react-router-dom";
 
 interface ApproachCardProps {
   approach: {
@@ -14,6 +15,13 @@ interface ApproachCardProps {
 }
 
 export const ApproachCard = ({ approach, onClick }: ApproachCardProps) => {
+  const navigate = useNavigate();
+
+  const handleNameClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    navigate(`/person/${approach.id}`);
+  };
+
   return (
     <Card
       className="p-4 hover:shadow-lg transition-shadow cursor-pointer animate-fade-in"
@@ -34,7 +42,12 @@ export const ApproachCard = ({ approach, onClick }: ApproachCardProps) => {
           )}
         </div>
         <div className="flex-1">
-          <h3 className="font-semibold text-lg">{approach.name}</h3>
+          <h3 
+            className="font-semibold text-lg hover:text-blue-600 cursor-pointer"
+            onClick={handleNameClick}
+          >
+            {approach.name}
+          </h3>
           <div className="flex flex-col gap-1 mt-2 text-sm text-gray-600">
             <div className="flex items-center gap-2">
               <CalendarDays className="w-4 h-4" />
