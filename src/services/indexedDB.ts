@@ -10,6 +10,8 @@ export interface Approach {
   date: string;
   location: string;
   imageUrl?: string;
+  latitude?: number;
+  longitude?: number;
 }
 
 class IndexedDBService {
@@ -21,16 +23,26 @@ class IndexedDBService {
     return new Promise((resolve, reject) => {
       const request = indexedDB.open(this.dbName, this.version);
 
-      request.onerror = () => reject(request.error);
+      request.onerror = () => {
+        console.error("Erro ao abrir banco de dados:", request.error);
+        reject(request.error);
+      };
+      
       request.onsuccess = () => {
+        console.log("Banco de dados aberto com sucesso");
         this.db = request.result;
         resolve();
       };
 
       request.onupgradeneeded = (event) => {
+        console.log("Atualizando estrutura do banco de dados");
         const db = (event.target as IDBOpenDBRequest).result;
         if (!db.objectStoreNames.contains('approaches')) {
-          db.createObjectStore('approaches', { keyPath: 'id' });
+          const store = db.createObjectStore('approaches', { keyPath: 'id' });
+          store.createIndex('name', 'name', { unique: false });
+          store.createIndex('rg', 'rg', { unique: false });
+          store.createIndex('cpf', 'cpf', { unique: false });
+          console.log("Store 'approaches' criada com sucesso");
         }
       };
     });
@@ -42,10 +54,17 @@ class IndexedDBService {
     return new Promise((resolve, reject) => {
       const transaction = this.db!.transaction(['approaches'], 'readwrite');
       const store = transaction.objectStore('approaches');
+      console.log("Salvando abordagem:", approach);
       const request = store.add(approach);
 
-      request.onerror = () => reject(request.error);
-      request.onsuccess = () => resolve();
+      request.onerror = () => {
+        console.error("Erro ao salvar abordagem:", request.error);
+        reject(request.error);
+      };
+      request.onsuccess = () => {
+        console.log("Abordagem salva com sucesso");
+        resolve();
+      };
     });
   }
 
@@ -57,8 +76,14 @@ class IndexedDBService {
       const store = transaction.objectStore('approaches');
       const request = store.getAll();
 
-      request.onerror = () => reject(request.error);
-      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => {
+        console.error("Erro ao buscar abordagens:", request.error);
+        reject(request.error);
+      };
+      request.onsuccess = () => {
+        console.log("Abordagens recuperadas com sucesso:", request.result);
+        resolve(request.result);
+      };
     });
   }
 
@@ -70,8 +95,33 @@ class IndexedDBService {
       const store = transaction.objectStore('approaches');
       const request = store.get(id);
 
-      request.onerror = () => reject(request.error);
-      request.onsuccess = () => resolve(request.result || null);
+      request.onerror = () => {
+        console.error("Erro ao buscar abordagem por ID:", request.error);
+        reject(request.error);
+      };
+      request.onsuccess = () => {
+        console.log("Abordagem recuperada por ID:", request.result);
+        resolve(request.result || null);
+      };
+    });
+  }
+
+  async searchApproaches(query: string): Promise<Approach[]> {
+    const approaches = await this.getApproaches();
+    const searchStr = query.toLowerCase();
+    
+    return approaches.filter(approach => {
+      const searchableStr = `
+        ${approach.name} 
+        ${approach.motherName} 
+        ${approach.rg} 
+        ${approach.cpf} 
+        ${approach.address} 
+        ${approach.observations || ''} 
+        ${approach.companions?.join(' ') || ''}
+      `.toLowerCase();
+      
+      return searchableStr.includes(searchStr);
     });
   }
 }
