@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { SearchBar } from "@/components/SearchBar";
 import { ApproachCard } from "@/components/ApproachCard";
 import { ApproachForm } from "@/components/ApproachForm";
+import { AdvancedSearchFilters, type SearchFilters } from "@/components/AdvancedSearchFilters";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -14,6 +15,7 @@ const Index = () => {
   const [approaches, setApproaches] = useState<Approach[]>([]);
   const [filteredApproaches, setFilteredApproaches] = useState<Approach[]>([]);
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const [activeFilters, setActiveFilters] = useState<SearchFilters>({});
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -22,7 +24,7 @@ const Index = () => {
       try {
         const data = await indexedDBService.getApproaches();
         setApproaches(data);
-        setFilteredApproaches(data);
+        applyFilters(data, searchQuery, activeFilters);
       } catch (error) {
         console.error("Error loading approaches:", error);
         toast({
@@ -36,13 +38,74 @@ const Index = () => {
     loadApproaches();
   }, [toast]);
 
+  const applyFilters = (data: Approach[], query: string, filters: SearchFilters) => {
+    let filtered = [...data];
+
+    // Texto de busca geral
+    if (query) {
+      const searchStr = query.toLowerCase();
+      filtered = filtered.filter((approach) => {
+        const searchableStr = `
+          ${approach.name} 
+          ${approach.motherName} 
+          ${approach.rg} 
+          ${approach.cpf} 
+          ${approach.address} 
+          ${approach.observations || ''} 
+          ${approach.companions?.join(' ') || ''}
+        `.toLowerCase();
+        return searchableStr.includes(searchStr);
+      });
+    }
+
+    // Filtros avançados
+    if (filters.name) {
+      filtered = filtered.filter(a => 
+        a.name.toLowerCase().includes(filters.name!.toLowerCase())
+      );
+    }
+    if (filters.rg) {
+      filtered = filtered.filter(a => 
+        a.rg.includes(filters.rg!)
+      );
+    }
+    if (filters.cpf) {
+      filtered = filtered.filter(a => 
+        a.cpf.includes(filters.cpf!)
+      );
+    }
+    if (filters.location) {
+      filtered = filtered.filter(a => 
+        a.address.toLowerCase().includes(filters.location!.toLowerCase())
+      );
+    }
+    if (filters.observations) {
+      filtered = filtered.filter(a => 
+        a.observations?.toLowerCase().includes(filters.observations!.toLowerCase())
+      );
+    }
+    if (filters.companion) {
+      filtered = filtered.filter(a => 
+        a.companions?.some(c => 
+          c.toLowerCase().includes(filters.companion!.toLowerCase())
+        )
+      );
+    }
+
+    // Ordenar por data (mais recente primeiro)
+    filtered.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    
+    setFilteredApproaches(filtered);
+  };
+
   const handleSearch = (query: string) => {
     setSearchQuery(query);
-    const filtered = approaches.filter((approach) => {
-      const searchStr = `${approach.name} ${approach.location} ${approach.companions?.join(" ")}`.toLowerCase();
-      return searchStr.includes(query.toLowerCase());
-    });
-    setFilteredApproaches(filtered);
+    applyFilters(approaches, query, activeFilters);
+  };
+
+  const handleFilterChange = (filters: SearchFilters) => {
+    setActiveFilters(filters);
+    applyFilters(approaches, searchQuery, filters);
   };
 
   const handleApproachClick = (id: string) => {
@@ -62,16 +125,17 @@ const Index = () => {
       cpf: data.cpf,
       address: data.address,
       observations: data.observations,
-      companions: data.companions ? data.companions.split(",").map((c: string) => c.trim()) : [],
+      companions: data.companions,
       date: new Date().toLocaleString(),
       location: data.address,
+      imageUrl: data.imageUrl,
     };
 
     try {
       await indexedDBService.addApproach(newApproach);
       const updatedApproaches = await indexedDBService.getApproaches();
       setApproaches(updatedApproaches);
-      setFilteredApproaches(updatedApproaches);
+      applyFilters(updatedApproaches, searchQuery, activeFilters);
       toast({
         title: "Sucesso",
         description: "Abordagem registrada com sucesso.",
@@ -100,11 +164,14 @@ const Index = () => {
               Nova Abordagem
             </Button>
           </div>
-          <div className="mt-6">
-            <SearchBar
-              onSearch={handleSearch}
-              placeholder="Buscar por nome, RG, CPF ou local..."
-            />
+          <div className="mt-6 space-y-4">
+            <div className="flex flex-col md:flex-row gap-4">
+              <SearchBar
+                onSearch={handleSearch}
+                placeholder="Buscar por nome, RG, CPF ou local..."
+              />
+              <AdvancedSearchFilters onFilterChange={handleFilterChange} />
+            </div>
           </div>
         </div>
       </header>
@@ -112,7 +179,7 @@ const Index = () => {
       <main className="container py-8">
         <div className="mb-6">
           <h2 className="text-xl font-semibold text-gray-800">
-            {searchQuery
+            {searchQuery || Object.keys(activeFilters).length > 0
               ? `Resultados da busca: ${filteredApproaches.length} encontrados`
               : "Últimas Abordagens"}
           </h2>
