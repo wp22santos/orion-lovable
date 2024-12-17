@@ -1,14 +1,12 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { SearchBar } from "@/components/SearchBar";
-import { ApproachCard } from "@/components/ApproachCard";
+import { Header } from "@/components/Header";
+import { ApproachList } from "@/components/ApproachList";
 import { ApproachForm } from "@/components/ApproachForm";
-import { AdvancedSearchFilters, type SearchFilters } from "@/components/AdvancedSearchFilters";
-import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { indexedDBService, type Approach } from "@/services/indexedDB";
 import { v4 as uuidv4 } from "uuid";
+import type { SearchFilters } from "@/components/AdvancedSearchFilters";
 
 const Index = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -20,28 +18,27 @@ const Index = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const loadApproaches = async () => {
-      try {
-        const data = await indexedDBService.getApproaches();
-        setApproaches(data);
-        applyFilters(data, searchQuery, activeFilters);
-      } catch (error) {
-        console.error("Error loading approaches:", error);
-        toast({
-          title: "Erro",
-          description: "Não foi possível carregar as abordagens.",
-          variant: "destructive",
-        });
-      }
-    };
-
     loadApproaches();
-  }, [toast]);
+  }, []);
+
+  const loadApproaches = async () => {
+    try {
+      const data = await indexedDBService.getApproaches();
+      setApproaches(data);
+      applyFilters(data, searchQuery, activeFilters);
+    } catch (error) {
+      console.error("Error loading approaches:", error);
+      toast({
+        title: "Erro",
+        description: "Não foi possível carregar as abordagens.",
+        variant: "destructive",
+      });
+    }
+  };
 
   const applyFilters = (data: Approach[], query: string, filters: SearchFilters) => {
     let filtered = [...data];
 
-    // Texto de busca geral
     if (query) {
       const searchStr = query.toLowerCase();
       filtered = filtered.filter((approach) => {
@@ -92,9 +89,7 @@ const Index = () => {
       );
     }
 
-    // Ordenar por data (mais recente primeiro)
     filtered.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-    
     setFilteredApproaches(filtered);
   };
 
@@ -110,10 +105,6 @@ const Index = () => {
 
   const handleApproachClick = (id: string) => {
     navigate(`/approach/${id}`);
-  };
-
-  const handleNewApproach = () => {
-    setIsFormOpen(true);
   };
 
   const handleFormSubmit = async (data: any) => {
@@ -133,9 +124,7 @@ const Index = () => {
 
     try {
       await indexedDBService.addApproach(newApproach);
-      const updatedApproaches = await indexedDBService.getApproaches();
-      setApproaches(updatedApproaches);
-      applyFilters(updatedApproaches, searchQuery, activeFilters);
+      await loadApproaches();
       toast({
         title: "Sucesso",
         description: "Abordagem registrada com sucesso.",
@@ -152,29 +141,11 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <header className="bg-police-primary text-white sticky top-0 z-10 shadow-md">
-        <div className="container py-6">
-          <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
-            <h1 className="text-2xl font-bold">Sistema de Registro Policial</h1>
-            <Button
-              onClick={handleNewApproach}
-              className="bg-police-accent hover:bg-police-secondary transition-colors w-full md:w-auto"
-            >
-              <Plus className="w-4 h-4 mr-2" />
-              Nova Abordagem
-            </Button>
-          </div>
-          <div className="mt-6 space-y-4">
-            <div className="flex flex-col md:flex-row gap-4">
-              <SearchBar
-                onSearch={handleSearch}
-                placeholder="Buscar por nome, RG, CPF ou local..."
-              />
-              <AdvancedSearchFilters onFilterChange={handleFilterChange} />
-            </div>
-          </div>
-        </div>
-      </header>
+      <Header
+        onNewApproach={() => setIsFormOpen(true)}
+        onSearch={handleSearch}
+        onFilterChange={handleFilterChange}
+      />
 
       <main className="container py-8">
         <div className="mb-6">
@@ -185,20 +156,10 @@ const Index = () => {
           </h2>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {filteredApproaches.map((approach) => (
-            <ApproachCard
-              key={approach.id}
-              approach={approach}
-              onClick={handleApproachClick}
-            />
-          ))}
-          {filteredApproaches.length === 0 && (
-            <div className="col-span-full text-center py-8 text-gray-500">
-              Nenhuma abordagem encontrada
-            </div>
-          )}
-        </div>
+        <ApproachList
+          approaches={filteredApproaches}
+          onApproachClick={handleApproachClick}
+        />
       </main>
 
       <ApproachForm
