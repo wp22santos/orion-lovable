@@ -149,7 +149,7 @@ const Index = () => {
         onFilterChange={handleFilterChange}
       />
 
-      <main className={`${isMobile ? 'px-4' : 'container'} py-4 md:py-8`}>
+      <main className={`${isMobile ? 'px-4 pb-20' : 'container'} py-4 md:py-8`}>
         <div className="mb-4 md:mb-6">
           <h2 className="text-lg md:text-xl font-semibold text-gray-800">
             {searchQuery || Object.keys(activeFilters).length > 0
