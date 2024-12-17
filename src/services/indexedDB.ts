@@ -12,6 +12,12 @@ export interface Approach {
   imageUrl?: string;
   latitude?: number;
   longitude?: number;
+  vehicle?: {
+    type: string;
+    model: string;
+    plate: string;
+    observations?: string;
+  };
 }
 
 class IndexedDBService {
