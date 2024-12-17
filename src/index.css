@@ -45,4 +45,56 @@
   #root {
     @apply flex flex-col min-h-screen;
   }
+
+  /* Melhorias visuais globais */
+  input, textarea, select {
+    @apply bg-white border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200;
+  }
+
+  button {
+    @apply transition-all duration-200 active:scale-95;
+  }
+
+  .card-hover {
+    @apply hover:shadow-lg transition-all duration-300 hover:border-blue-200;
+  }
+
+  .gradient-bg {
+    @apply bg-gradient-to-r from-blue-600 to-blue-800;
+  }
+
+  .input-focus {
+    @apply focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent;
+  }
+
+  .button-primary {
+    @apply bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg 
+           shadow-md hover:shadow-lg transition-all duration-300 active:scale-95;
+  }
+
+  .button-secondary {
+    @apply bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium py-2 px-4 rounded-lg 
+           shadow-sm hover:shadow-md transition-all duration-300 active:scale-95;
+  }
+
+  .card-container {
+    @apply bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-all duration-300;
+  }
+
+  .form-input {
+    @apply w-full px-4 py-2 rounded-lg border border-gray-300 focus:border-blue-500 
+           focus:ring-2 focus:ring-blue-200 transition-all duration-200;
+  }
+
+  .form-label {
+    @apply block text-sm font-medium text-gray-700 mb-1;
+  }
+
+  .page-container {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6;
+  }
+
+  .section-title {
+    @apply text-2xl font-bold text-gray-900 mb-4;
+  }
 }
