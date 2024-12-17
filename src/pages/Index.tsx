@@ -160,14 +160,14 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="flex flex-col min-h-screen bg-gray-50">
       <Header
         onNewApproach={() => setIsFormOpen(true)}
         onSearch={handleSearch}
         onFilterChange={handleFilterChange}
       />
 
-      <main className={`${isMobile ? 'px-4 pb-20' : 'container'} py-4 md:py-8`}>
+      <main className={`flex-1 ${isMobile ? 'px-4 pb-20' : 'container'} py-4 md:py-8 overflow-y-auto`}>
         <div className="mb-4 md:mb-6">
           <h2 className="text-lg md:text-xl font-semibold text-gray-800">
             {searchQuery || Object.keys(activeFilters).length > 0
