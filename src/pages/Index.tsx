@@ -1,43 +1,44 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { SearchBar } from "@/components/SearchBar";
 import { ApproachCard } from "@/components/ApproachCard";
 import { ApproachForm } from "@/components/ApproachForm";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
-import { useToast } from "@/components/ui/use-toast";
-
-const mockApproaches = [
-  {
-    id: "1",
-    name: "João Silva",
-    date: "2024-03-14 15:30",
-    location: "Av. Paulista, 1000",
-    companions: ["Maria Santos", "Pedro Lima"],
-  },
-  {
-    id: "2",
-    name: "Ana Oliveira",
-    date: "2024-03-14 14:15",
-    location: "Rua Augusta, 500",
-  },
-  {
-    id: "3",
-    name: "Carlos Souza",
-    date: "2024-03-14 13:00",
-    location: "Rua Oscar Freire, 200",
-    companions: ["Roberto Santos"],
-  },
-];
+import { useToast } from "@/hooks/use-toast";
+import { indexedDBService, type Approach } from "@/services/indexedDB";
+import { v4 as uuidv4 } from "uuid";
 
 const Index = () => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [filteredApproaches, setFilteredApproaches] = useState(mockApproaches);
+  const [approaches, setApproaches] = useState<Approach[]>([]);
+  const [filteredApproaches, setFilteredApproaches] = useState<Approach[]>([]);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const { toast } = useToast();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const loadApproaches = async () => {
+      try {
+        const data = await indexedDBService.getApproaches();
+        setApproaches(data);
+        setFilteredApproaches(data);
+      } catch (error) {
+        console.error("Error loading approaches:", error);
+        toast({
+          title: "Erro",
+          description: "Não foi possível carregar as abordagens.",
+          variant: "destructive",
+        });
+      }
+    };
+
+    loadApproaches();
+  }, [toast]);
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
-    const filtered = mockApproaches.filter((approach) => {
+    const filtered = approaches.filter((approach) => {
       const searchStr = `${approach.name} ${approach.location} ${approach.companions?.join(" ")}`.toLowerCase();
       return searchStr.includes(query.toLowerCase());
     });
@@ -45,20 +46,44 @@ const Index = () => {
   };
 
   const handleApproachClick = (id: string) => {
-    // Will be implemented later for navigation to approach details
-    console.log("Clicked approach:", id);
+    navigate(`/approach/${id}`);
   };
 
   const handleNewApproach = () => {
     setIsFormOpen(true);
   };
 
-  const handleFormSubmit = (data: any) => {
-    console.log("Form data:", data);
-    toast({
-      title: "Abordagem registrada",
-      description: "Os dados foram salvos com sucesso.",
-    });
+  const handleFormSubmit = async (data: any) => {
+    const newApproach: Approach = {
+      id: uuidv4(),
+      name: data.name,
+      motherName: data.motherName,
+      rg: data.rg,
+      cpf: data.cpf,
+      address: data.address,
+      observations: data.observations,
+      companions: data.companions ? data.companions.split(",").map((c: string) => c.trim()) : [],
+      date: new Date().toLocaleString(),
+      location: data.address,
+    };
+
+    try {
+      await indexedDBService.addApproach(newApproach);
+      const updatedApproaches = await indexedDBService.getApproaches();
+      setApproaches(updatedApproaches);
+      setFilteredApproaches(updatedApproaches);
+      toast({
+        title: "Sucesso",
+        description: "Abordagem registrada com sucesso.",
+      });
+    } catch (error) {
+      console.error("Error saving approach:", error);
+      toast({
+        title: "Erro",
+        description: "Não foi possível salvar a abordagem.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -71,7 +96,7 @@ const Index = () => {
               onClick={handleNewApproach}
               className="bg-police-accent hover:bg-police-secondary transition-colors w-full md:w-auto"
             >
-              <Plus className="w-4 h-4" />
+              <Plus className="w-4 h-4 mr-2" />
               Nova Abordagem
             </Button>
           </div>
