@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { indexedDBService, type Approach } from "@/services/indexedDB";
 import { useNavigate } from "react-router-dom";
-import { Users } from "lucide-react";
+import { Users, CalendarDays, MapPin } from "lucide-react";
 
 interface RelatedApproachesProps {
   personId: string;
@@ -44,6 +44,21 @@ export const RelatedApproaches = ({ personId, currentApproachId }: RelatedApproa
     loadRelatedApproaches();
   }, [personId, currentApproachId]);
 
+  const getCompanionNames = (approach: Approach, currentPersonId: string) => {
+    const companions: string[] = [];
+    
+    // Adiciona nomes das pessoas da abordagem, exceto a pessoa atual
+    if (approach.pessoas) {
+      approach.pessoas.forEach(person => {
+        if (person.id !== currentPersonId) {
+          companions.push(person.dados.nome);
+        }
+      });
+    }
+    
+    return companions.join(", ");
+  };
+
   if (loading) {
     return <div className="text-center py-4">Carregando relacionamentos...</div>;
   }
@@ -69,16 +84,48 @@ export const RelatedApproaches = ({ personId, currentApproachId }: RelatedApproa
             className="p-4 hover:shadow-lg transition-shadow cursor-pointer"
             onClick={() => navigate(`/approach/${approach.id}`)}
           >
-            <div className="space-y-2">
-              <h4 className="font-medium">{approach.name}</h4>
-              <div className="text-sm text-gray-600">
-                <p>{approach.date}</p>
-                <p>{approach.location}</p>
-                {approach.companions && approach.companions.length > 0 && (
-                  <p className="text-xs mt-1">
-                    Acompanhantes: {approach.companions.join(", ")}
-                  </p>
-                )}
+            <div className="space-y-4">
+              {/* Fotos da abordagem */}
+              {approach.pessoas && approach.pessoas.length > 0 && (
+                <div className="flex -space-x-2 overflow-hidden">
+                  {approach.pessoas.slice(0, 3).map((person, index) => (
+                    person.dados.foto ? (
+                      <img
+                        key={person.id}
+                        src={person.dados.foto}
+                        alt={person.dados.nome}
+                        className="inline-block h-12 w-12 rounded-full ring-2 ring-white object-cover"
+                      />
+                    ) : (
+                      <div
+                        key={person.id}
+                        className="inline-block h-12 w-12 rounded-full ring-2 ring-white bg-gray-300 flex items-center justify-center text-gray-600"
+                      >
+                        {person.dados.nome.charAt(0)}
+                      </div>
+                    )
+                  ))}
+                </div>
+              )}
+
+              <div className="space-y-2">
+                <h4 className="font-medium">{approach.name}</h4>
+                <div className="text-sm text-gray-600 space-y-1">
+                  <div className="flex items-center gap-2">
+                    <CalendarDays className="w-4 h-4" />
+                    <p>{approach.date}</p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <MapPin className="w-4 h-4" />
+                    <p>{approach.location}</p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Users className="w-4 h-4" />
+                    <p className="text-xs">
+                      Com: {getCompanionNames(approach, personId)}
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
           </Card>
