@@ -35,6 +35,8 @@ export interface Approach {
   imageUrl?: string;
   data: string;
   endereco: Endereco;
+  latitude: number;
+  longitude: number;
   pessoas: {
     id: string;
     dados: {
@@ -60,6 +62,7 @@ class IndexedDBService {
 
   async initDB(): Promise<void> {
     return new Promise((resolve, reject) => {
+      console.log("Iniciando conexão com o IndexedDB...");
       const request = indexedDB.open(this.dbName, this.version);
 
       request.onerror = () => {
@@ -88,7 +91,10 @@ class IndexedDBService {
   }
 
   async addApproach(approach: Approach): Promise<void> {
-    if (!this.db) await this.initDB();
+    if (!this.db) {
+      console.log("Inicializando banco de dados...");
+      await this.initDB();
+    }
     
     return new Promise((resolve, reject) => {
       const transaction = this.db!.transaction(['approaches'], 'readwrite');
@@ -108,7 +114,10 @@ class IndexedDBService {
   }
 
   async getApproaches(): Promise<Approach[]> {
-    if (!this.db) await this.initDB();
+    if (!this.db) {
+      console.log("Inicializando banco de dados para busca...");
+      await this.initDB();
+    }
 
     return new Promise((resolve, reject) => {
       const transaction = this.db!.transaction(['approaches'], 'readonly');

@@ -37,8 +37,8 @@ export const AbordagemForm = () => {
   });
   const [location, setLocation] = useState({
     address: "",
-    latitude: undefined,
-    longitude: undefined,
+    latitude: 0,
+    longitude: 0,
   });
 
   const handleLocationChange = (field: string, value: string | number) => {
@@ -56,6 +56,8 @@ export const AbordagemForm = () => {
 
   const handleSave = async () => {
     try {
+      console.log("Iniciando salvamento da abordagem...");
+      
       if (pessoas.length === 0) {
         toast({
           title: "Erro",
@@ -74,9 +76,14 @@ export const AbordagemForm = () => {
         location: location.address,
         address: location.address,
         data: dataAtual,
-        endereco: endereco,
-        latitude: location.latitude,
-        longitude: location.longitude,
+        endereco: {
+          rua: endereco.rua || "",
+          numero: endereco.numero || "",
+          bairro: endereco.bairro || "",
+          complemento: endereco.complemento || "",
+        },
+        latitude: location.latitude || 0,
+        longitude: location.longitude || 0,
         name: mainPerson.name,
         motherName: mainPerson.motherName,
         rg: mainPerson.rg,
@@ -93,7 +100,12 @@ export const AbordagemForm = () => {
             nomePai: "",
             endereco: location.address,
           },
-          endereco: endereco,
+          endereco: {
+            rua: endereco.rua || "",
+            numero: endereco.numero || "",
+            bairro: endereco.bairro || "",
+            complemento: endereco.complemento || "",
+          },
           veiculo: {
             plate: "",
             brand: "",
@@ -104,11 +116,16 @@ export const AbordagemForm = () => {
         })),
       };
 
+      console.log("Dados da abordagem preparados:", abordagem);
+      
       await indexedDBService.addApproach(abordagem);
+      console.log("Abordagem salva com sucesso no IndexedDB");
+      
       toast({
         title: "Sucesso",
         description: "Abordagem salva com sucesso.",
       });
+      
       navigate("/");
     } catch (error) {
       console.error("Erro ao salvar abordagem:", error);
@@ -175,7 +192,6 @@ export const AbordagemForm = () => {
       <div className="flex justify-end">
         <Button
           onClick={handleSave}
-          disabled={!location.address || pessoas.length === 0}
           className="bg-green-600 hover:bg-green-700 text-white px-6"
         >
           Salvar Abordagem
