@@ -159,6 +159,7 @@ export const ApproachedPersonForm = ({ onSave, onCancel, existingPerson }: Appro
                   photos={photos} 
                   onPhotosChange={setPhotos}
                   onProfilePhotoChange={setProfilePhoto}
+                  currentProfilePhoto={existingPerson?.profilePhoto}
                 />
               </div>
             </div>

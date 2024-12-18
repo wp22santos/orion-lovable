@@ -1,17 +1,29 @@
 import { Camera, User } from "lucide-react";
 import { Button } from "./ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 interface PhotoCaptureProps {
   photos: string[];
   onPhotosChange: (photos: string[]) => void;
   onProfilePhotoChange?: (photoUrl: string) => void;
+  currentProfilePhoto?: string | null;
 }
 
-export const PhotoCapture = ({ photos, onPhotosChange, onProfilePhotoChange }: PhotoCaptureProps) => {
+export const PhotoCapture = ({ 
+  photos, 
+  onPhotosChange, 
+  onProfilePhotoChange,
+  currentProfilePhoto 
+}: PhotoCaptureProps) => {
   const { toast } = useToast();
-  const [selectedProfilePhoto, setSelectedProfilePhoto] = useState<string | null>(null);
+  const [selectedProfilePhoto, setSelectedProfilePhoto] = useState<string | null>(currentProfilePhoto || null);
+
+  useEffect(() => {
+    if (currentProfilePhoto) {
+      setSelectedProfilePhoto(currentProfilePhoto);
+    }
+  }, [currentProfilePhoto]);
 
   const handlePhotoCapture = async () => {
     try {
@@ -61,11 +73,11 @@ export const PhotoCapture = ({ photos, onPhotosChange, onProfilePhotoChange }: P
     setSelectedProfilePhoto(photoUrl);
     if (onProfilePhotoChange) {
       onProfilePhotoChange(photoUrl);
+      toast({
+        title: "Foto de perfil definida",
+        description: "A foto foi definida como foto de perfil.",
+      });
     }
-    toast({
-      title: "Foto de perfil definida",
-      description: "A foto foi definida como foto de perfil.",
-    });
   };
 
   return (
