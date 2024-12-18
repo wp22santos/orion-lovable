@@ -39,17 +39,20 @@ const PersonProfile = () => {
         const approaches = await indexedDBService.getApproaches();
         console.log("Abordagens encontradas:", approaches);
         
+        let foundPerson = null;
         // Encontrar a pessoa em todas as abordagens
         for (const approach of approaches) {
-          const foundPerson = approach.pessoas?.find(p => p.id === id);
-          if (foundPerson) {
-            console.log("Pessoa encontrada:", foundPerson);
-            setPerson(foundPerson);
-            break;
+          if (approach.pessoas) {
+            foundPerson = approach.pessoas.find(p => p.id === id);
+            if (foundPerson) {
+              console.log("Pessoa encontrada:", foundPerson);
+              setPerson(foundPerson);
+              break;
+            }
           }
         }
         
-        if (!person) {
+        if (!foundPerson) {
           console.log("Pessoa não encontrada");
           toast.error("Pessoa não encontrada");
           navigate("/");
