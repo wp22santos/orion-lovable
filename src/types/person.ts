@@ -29,6 +29,7 @@ export interface PersonData {
   nomeMae: string;
   nomePai: string;
   endereco?: string;
+  profilePhoto?: string;
 }
 
 export interface Person {

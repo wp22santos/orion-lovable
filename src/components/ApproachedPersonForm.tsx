@@ -40,7 +40,6 @@ export const ApproachedPersonForm = ({ onSave, onCancel, existingPerson }: Appro
   };
 
   const handlePersonFound = (person: any) => {
-    console.log("Pessoa encontrada:", person);
     setFormData({
       name: person.name,
       motherName: person.motherName,
@@ -162,7 +161,7 @@ export const ApproachedPersonForm = ({ onSave, onCancel, existingPerson }: Appro
                 type="submit"
                 className="flex-1 bg-police-primary hover:bg-police-dark text-white h-12"
               >
-                Salvar
+                Adicionar à Abordagem
               </Button>
             </div>
           </div>

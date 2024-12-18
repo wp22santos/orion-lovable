@@ -23,8 +23,19 @@ export const AbordagemForm = () => {
     setLocation(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleAddPerson = (person: ApproachedPerson) => {
-    setPessoas(prev => [...prev, person]);
+  const handlePersonSubmit = (person: ApproachedPerson) => {
+    setPessoas(prev => {
+      const newPessoas = [...prev];
+      const existingIndex = newPessoas.findIndex(p => p.id === person.id);
+      
+      if (existingIndex !== -1) {
+        newPessoas[existingIndex] = person;
+      } else {
+        newPessoas.push(person);
+      }
+      
+      return newPessoas;
+    });
     setShowPersonForm(false);
     toast.success("Pessoa adicionada com sucesso");
   };
@@ -63,6 +74,7 @@ export const AbordagemForm = () => {
           id: p.id,
           dados: {
             foto: p.photos.find(photo => photo.isPerfil)?.url || "",
+            fotos: p.photos,
             nome: p.name,
             dataNascimento: "",
             rg: p.rg,
@@ -70,7 +82,6 @@ export const AbordagemForm = () => {
             nomeMae: p.motherName,
             nomePai: "",
             endereco: location.address,
-            fotos: p.photos,
             profilePhoto: p.photos.find(photo => photo.isPerfil)?.url || ""
           },
           endereco: p.endereco || {
@@ -90,7 +101,6 @@ export const AbordagemForm = () => {
         companions: pessoas.slice(1).map(p => p.name),
       };
 
-      console.log("Salvando abordagem:", abordagem);
       await indexedDBService.addApproach(abordagem);
       toast.success("Abordagem salva com sucesso");
       navigate("/");
@@ -102,7 +112,7 @@ export const AbordagemForm = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100">
-      <div className="container mx-auto px-4 py-6 space-y-6 max-w-3xl animate-fade-in">
+      <div className="container mx-auto px-4 py-6 space-y-6 max-w-3xl animate-fade-in pb-24">
         <Card className="bg-white/80 backdrop-blur-sm border border-gray-200 p-6 shadow-lg rounded-xl">
           <LocationForm formData={location} onChange={handleLocationChange} />
         </Card>
@@ -121,7 +131,7 @@ export const AbordagemForm = () => {
 
           {showPersonForm && (
             <ApproachedPersonForm
-              onSave={handleAddPerson}
+              onSave={handlePersonSubmit}
               onCancel={() => setShowPersonForm(false)}
             />
           )}
@@ -132,7 +142,15 @@ export const AbordagemForm = () => {
                 <Card 
                   key={person.id} 
                   className="bg-gray-50/80 backdrop-blur-sm p-4 hover:bg-gray-50/90 
-                           transition-all duration-200 border border-gray-200"
+                           transition-all duration-200 border border-gray-200 cursor-pointer"
+                  onClick={() => {
+                    setShowPersonForm(true);
+                    // Edit existing person
+                    const personToEdit = pessoas.find(p => p.id === person.id);
+                    if (personToEdit) {
+                      setPessoas(prev => prev.filter(p => p.id !== person.id));
+                    }
+                  }}
                 >
                   <div className="flex items-center space-x-4">
                     {person.photos?.find(p => p.isPerfil)?.url && (
