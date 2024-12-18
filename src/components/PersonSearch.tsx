@@ -43,7 +43,7 @@ export const PersonSearch = ({ onPersonFound }: PersonSearchProps) => {
                 lastApproachDate: approach.date,
                 dados: {
                   ...person.dados,
-                  fotos: person.dados.fotos || [],
+                  fotos: person.dados.fotos || []
                 }
               });
             }
@@ -74,7 +74,6 @@ export const PersonSearch = ({ onPersonFound }: PersonSearchProps) => {
   }, [debouncedSearch, toast]);
 
   const handlePersonSelect = (person: UniquePerson) => {
-    const profilePhoto = person.dados.fotos?.find((p: Photo) => p.isPerfil)?.url;
     const personData = {
       id: person.id,
       name: person.dados.nome,

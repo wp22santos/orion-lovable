@@ -13,7 +13,6 @@ export interface PersonData {
   nomePai: string;
   endereco?: string;
   fotos: Photo[];
-  profilePhoto?: string;
 }
 
 export interface Endereco {
