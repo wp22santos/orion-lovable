@@ -14,7 +14,8 @@ interface ApproachedPerson {
   motherName: string;
   rg: string;
   cpf: string;
-  fotoPerfil?: string;
+  photos?: string[];
+  profilePhotoIndex?: number;
   endereco?: {
     rua: string;
     numero: string;
@@ -31,7 +32,8 @@ interface ApproachedPersonFormProps {
 
 export const ApproachedPersonForm = ({ onSave, onCancel, existingPerson }: ApproachedPersonFormProps) => {
   const { toast } = useToast();
-  const [fotoPerfil, setFotoPerfil] = useState<string | undefined>(existingPerson?.fotoPerfil);
+  const [photos, setPhotos] = useState<string[]>(existingPerson?.photos || []);
+  const [profilePhotoIndex, setProfilePhotoIndex] = useState<number>(existingPerson?.profilePhotoIndex || 0);
   const [formData, setFormData] = useState({
     name: existingPerson?.name || "",
     motherName: existingPerson?.motherName || "",
@@ -66,9 +68,15 @@ export const ApproachedPersonForm = ({ onSave, onCancel, existingPerson }: Appro
       setEndereco(person.endereco);
     }
 
-    if (person.fotoPerfil) {
-      setFotoPerfil(person.fotoPerfil);
+    if (person.photos) {
+      setPhotos(person.photos);
+      setProfilePhotoIndex(person.profilePhotoIndex || 0);
     }
+  };
+
+  const handlePhotoCapture = (newPhotos: string[], newProfilePhotoIndex: number) => {
+    setPhotos(newPhotos);
+    setProfilePhotoIndex(newProfilePhotoIndex);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -85,7 +93,8 @@ export const ApproachedPersonForm = ({ onSave, onCancel, existingPerson }: Appro
     onSave({
       id: existingPerson?.id || crypto.randomUUID(),
       ...formData,
-      fotoPerfil,
+      photos,
+      profilePhotoIndex,
       endereco,
     });
   };
@@ -152,10 +161,11 @@ export const ApproachedPersonForm = ({ onSave, onCancel, existingPerson }: Appro
               </div>
 
               <div className="space-y-4">
-                <h4 className="font-medium text-gray-700">Foto</h4>
+                <h4 className="font-medium text-gray-700">Fotos</h4>
                 <PhotoCapture 
-                  onPhotoCapture={setFotoPerfil}
-                  currentPhoto={fotoPerfil}
+                  onPhotoCapture={handlePhotoCapture}
+                  currentPhotos={photos}
+                  currentProfilePhotoIndex={profilePhotoIndex}
                 />
               </div>
             </div>
