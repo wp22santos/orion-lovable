@@ -84,17 +84,19 @@ export const LocationForm = ({ formData, onChange }: LocationFormProps) => {
   };
 
   return (
-    <Card className="bg-white/80 backdrop-blur-sm border border-gray-100 p-6 shadow-lg rounded-2xl">
+    <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-xl rounded-2xl p-6">
       <div className="flex items-center gap-3 mb-6">
-        <MapPin className="w-6 h-6 text-purple-500" />
+        <div className="bg-gradient-to-br from-purple-500 to-blue-500 p-2 rounded-xl">
+          <MapPin className="w-6 h-6 text-white" />
+        </div>
         <h2 className="text-xl font-medium text-gray-900">
           Localização da Abordagem
         </h2>
       </div>
 
       <div className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2 md:col-span-2">
+        <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
+          <div className="space-y-2 md:col-span-4">
             <label htmlFor="street" className="text-sm font-medium text-gray-700">
               Logradouro
             </label>
@@ -107,7 +109,7 @@ export const LocationForm = ({ formData, onChange }: LocationFormProps) => {
             />
           </div>
           
-          <div className="space-y-2">
+          <div className="space-y-2 md:col-span-2">
             <label htmlFor="number" className="text-sm font-medium text-gray-700">
               Número
             </label>
@@ -120,7 +122,7 @@ export const LocationForm = ({ formData, onChange }: LocationFormProps) => {
             />
           </div>
           
-          <div className="space-y-2">
+          <div className="space-y-2 md:col-span-6">
             <label htmlFor="neighborhood" className="text-sm font-medium text-gray-700">
               Bairro
             </label>
@@ -138,13 +140,14 @@ export const LocationForm = ({ formData, onChange }: LocationFormProps) => {
           type="button"
           onClick={handleGetLocation}
           disabled={isLoadingLocation || loading}
-          className="w-full bg-white hover:bg-gray-50 text-gray-900 border border-gray-200 
-                   shadow-sm h-12 text-lg flex items-center justify-center gap-2"
+          className="w-full bg-gradient-to-r from-purple-500 to-blue-500 text-white 
+                   hover:from-purple-600 hover:to-blue-600 h-12 text-lg shadow-lg
+                   shadow-purple-500/20 rounded-xl flex items-center justify-center gap-2"
         >
           {isLoadingLocation ? (
-            <Loader2 className="w-5 h-5 animate-spin text-purple-500" />
+            <Loader2 className="w-5 h-5 animate-spin" />
           ) : (
-            <MapPin className="w-5 h-5 text-purple-500" />
+            <MapPin className="w-5 h-5" />
           )}
           {isLoadingLocation ? "Obtendo localização..." : "Atualizar GPS"}
         </Button>

@@ -5,6 +5,7 @@ import { PersonSearch } from "./PersonSearch";
 import { PhotoCapture } from "./PhotoCapture";
 import { useToast } from "@/hooks/use-toast";
 import { Card } from "@/components/ui/card";
+import { X } from "lucide-react";
 
 interface ApproachedPerson {
   id: string;
@@ -68,7 +69,20 @@ export const ApproachedPersonForm = ({ onSave, onCancel, existingPerson }: Appro
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6 animate-fade-in">
-      <Card className="bg-white/80 backdrop-blur-sm border border-gray-100 p-6 shadow-lg rounded-2xl">
+      <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-xl rounded-2xl p-6">
+        <div className="flex justify-between items-center mb-6">
+          <h3 className="text-xl font-medium text-gray-900">Adicionar Pessoa</h3>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            onClick={onCancel}
+            className="rounded-full hover:bg-gray-100"
+          >
+            <X className="h-5 w-5 text-gray-500" />
+          </Button>
+        </div>
+        
         <div className="space-y-6">
           <PersonSearch onPersonFound={handlePersonFound} />
           
@@ -77,18 +91,19 @@ export const ApproachedPersonForm = ({ onSave, onCancel, existingPerson }: Appro
             <PhotoCapture photos={photos} onPhotosChange={setPhotos} />
           </div>
 
-          <div className="flex justify-end gap-4 pt-4">
+          <div className="flex gap-4 pt-4">
             <Button 
               type="button" 
               variant="outline" 
               onClick={onCancel}
-              className="bg-white hover:bg-gray-50 text-gray-900 border-gray-200"
+              className="flex-1 bg-white hover:bg-gray-50 text-gray-900 border-gray-200 h-12"
             >
               Cancelar
             </Button>
             <Button 
               type="submit"
-              className="bg-purple-600 hover:bg-purple-700 text-white"
+              className="flex-1 bg-gradient-to-r from-purple-500 to-blue-500 text-white 
+                       hover:from-purple-600 hover:to-blue-600 h-12 shadow-lg shadow-purple-500/20"
             >
               Salvar
             </Button>
