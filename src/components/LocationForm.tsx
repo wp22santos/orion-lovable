@@ -25,7 +25,7 @@ export const LocationForm = ({ formData, onChange }: LocationFormProps) => {
   });
 
   useEffect(() => {
-    // Try to get location automatically when component mounts
+    // Tenta obter localização automaticamente quando o componente monta
     handleGetLocation();
   }, []);
 
@@ -94,9 +94,9 @@ export const LocationForm = ({ formData, onChange }: LocationFormProps) => {
   };
 
   return (
-    <div className="space-y-4 animate-fade-in">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="space-y-2">
+    <div className="space-y-6 animate-fade-in">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="space-y-2 md:col-span-2">
           <label htmlFor="street" className="text-sm font-medium text-gray-700">
             Logradouro
           </label>
@@ -105,7 +105,7 @@ export const LocationForm = ({ formData, onChange }: LocationFormProps) => {
             value={addressDetails.street}
             onChange={(e) => handleAddressChange("street", e.target.value)}
             placeholder="Nome da rua"
-            className="bg-white/50 border-gray-200 focus:border-purple-500"
+            className="bg-white/50 border-gray-200 focus:border-purple-500 h-12 text-lg"
           />
         </div>
         
@@ -118,7 +118,7 @@ export const LocationForm = ({ formData, onChange }: LocationFormProps) => {
             value={addressDetails.number}
             onChange={(e) => handleAddressChange("number", e.target.value)}
             placeholder="Número"
-            className="bg-white/50 border-gray-200 focus:border-purple-500"
+            className="bg-white/50 border-gray-200 focus:border-purple-500 h-12 text-lg"
           />
         </div>
         
@@ -131,27 +131,25 @@ export const LocationForm = ({ formData, onChange }: LocationFormProps) => {
             value={addressDetails.neighborhood}
             onChange={(e) => handleAddressChange("neighborhood", e.target.value)}
             placeholder="Bairro"
-            className="bg-white/50 border-gray-200 focus:border-purple-500"
+            className="bg-white/50 border-gray-200 focus:border-purple-500 h-12 text-lg"
           />
         </div>
       </div>
 
-      <div className="flex justify-end">
-        <Button
-          type="button"
-          variant="outline"
-          onClick={handleGetLocation}
-          disabled={isLoadingLocation || loading}
-          className="bg-white hover:bg-gray-50 border-gray-200"
-        >
-          {isLoadingLocation ? (
-            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-          ) : (
-            <MapPin className="w-4 h-4 mr-2 text-purple-500" />
-          )}
-          {isLoadingLocation ? "Obtendo..." : "Atualizar GPS"}
-        </Button>
-      </div>
+      <Button
+        type="button"
+        onClick={handleGetLocation}
+        disabled={isLoadingLocation || loading}
+        className="w-full bg-white hover:bg-gray-50 text-gray-900 border border-gray-200 
+                 shadow-sm h-12 text-lg flex items-center justify-center gap-2"
+      >
+        {isLoadingLocation ? (
+          <Loader2 className="w-5 h-5 animate-spin text-purple-500" />
+        ) : (
+          <MapPin className="w-5 h-5 text-purple-500" />
+        )}
+        {isLoadingLocation ? "Obtendo localização..." : "Atualizar GPS"}
+      </Button>
     </div>
   );
 };

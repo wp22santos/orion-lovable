@@ -42,17 +42,17 @@ export const PersonSearch = ({ onPersonFound }: PersonSearchProps) => {
   }, [debouncedSearch, onPersonFound, toast]);
 
   return (
-    <div className="relative w-full animate-fade-in">
+    <div className="w-full animate-fade-in">
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
         <Input
           type="text"
           placeholder="Buscar por nome, RG ou CPF..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="pl-10 bg-white/80 text-gray-900 border-gray-200 
+          className="pl-12 bg-white/80 text-gray-900 border-gray-200 
                    focus:ring-2 focus:ring-purple-500 focus:border-transparent
-                   transition-all duration-300"
+                   h-14 text-lg rounded-xl shadow-sm"
         />
       </div>
     </div>
