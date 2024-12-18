@@ -18,7 +18,7 @@ export const PersonSearch = ({ onPersonFound }: PersonSearchProps) => {
 
   useEffect(() => {
     const searchPerson = async () => {
-      if (debouncedSearch.length < 3) {
+      if (!debouncedSearch || debouncedSearch.length < 2) {
         setSearchResults([]);
         return;
       }
@@ -26,25 +26,38 @@ export const PersonSearch = ({ onPersonFound }: PersonSearchProps) => {
       try {
         console.log("Buscando pessoas com termo:", debouncedSearch);
         const approaches = await indexedDBService.getApproaches();
-        const foundApproaches = approaches.filter(approach => 
-          approach.name.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
-          approach.rg === debouncedSearch || 
-          approach.cpf === debouncedSearch
-        );
+        
+        // Filtrar abordagens que contenham o termo de busca
+        const foundApproaches = approaches.filter(approach => {
+          const mainPersonMatch = approach.pessoas?.[0]?.dados?.nome
+            ?.toLowerCase()
+            .includes(debouncedSearch.toLowerCase());
+            
+          const rgMatch = approach.pessoas?.[0]?.dados?.rg === debouncedSearch;
+          const cpfMatch = approach.pessoas?.[0]?.dados?.cpf === debouncedSearch;
+          
+          return mainPersonMatch || rgMatch || cpfMatch;
+        });
 
         console.log("Abordagens encontradas:", foundApproaches);
         setSearchResults(foundApproaches);
       } catch (error) {
         console.error("Erro ao buscar pessoa:", error);
+        toast({
+          title: "Erro na busca",
+          description: "Não foi possível realizar a busca.",
+          variant: "destructive",
+        });
       }
     };
 
     searchPerson();
-  }, [debouncedSearch]);
+  }, [debouncedSearch, toast]);
 
   const handleCardClick = (approach: any) => {
     console.log("Selecionando pessoa da abordagem:", approach);
     const mainPerson = approach.pessoas[0];
+    
     const personData = {
       id: mainPerson.id,
       name: mainPerson.dados.nome,
@@ -52,8 +65,9 @@ export const PersonSearch = ({ onPersonFound }: PersonSearchProps) => {
       rg: mainPerson.dados.rg,
       cpf: mainPerson.dados.cpf,
       photos: mainPerson.dados.foto ? [mainPerson.dados.foto] : [],
-      endereco: mainPerson.endereco
+      endereco: mainPerson.endereco || {}
     };
+
     onPersonFound(personData);
     toast({
       title: "Pessoa encontrada",
@@ -79,17 +93,20 @@ export const PersonSearch = ({ onPersonFound }: PersonSearchProps) => {
       {searchResults.length > 0 && (
         <div className="grid gap-4 mt-4">
           {searchResults.map((approach) => (
-            <div key={approach.id} onClick={() => handleCardClick(approach)}>
+            <div 
+              key={approach.id} 
+              onClick={() => handleCardClick(approach)}
+              className="cursor-pointer"
+            >
               <ApproachCard
                 approach={{
                   id: approach.id,
-                  name: approach.name,
+                  name: approach.pessoas[0]?.dados?.nome || "Nome não informado",
                   date: approach.date,
                   location: approach.location,
                   companions: approach.companions,
-                  imageUrl: approach.imageUrl
+                  imageUrl: approach.pessoas[0]?.dados?.foto
                 }}
-                onClick={() => handleCardClick(approach)}
               />
             </div>
           ))}
