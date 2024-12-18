@@ -1,17 +1,11 @@
 import { Input } from "@/components/ui/input";
-import { Select } from "@/components/ui/select";
-import {
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 
 export interface VehicleInfo {
-  type: string;
-  model: string;
   plate: string;
-  observations?: string;
+  brand: string;
+  color: string;
+  observations: string;
 }
 
 interface VehicleFormProps {
@@ -26,48 +20,42 @@ export const VehicleForm = ({ vehicle, onChange }: VehicleFormProps) => {
 
   return (
     <div className="space-y-4">
-      <div className="space-y-2">
-        <label className="text-sm font-medium">Tipo do Veículo</label>
-        <Select
-          value={vehicle.type}
-          onValueChange={(value) => handleChange("type", value)}
-        >
-          <SelectTrigger>
-            <SelectValue placeholder="Selecione o tipo" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="car">Carro</SelectItem>
-            <SelectItem value="motorcycle">Moto</SelectItem>
-            <SelectItem value="bicycle">Bicicleta</SelectItem>
-            <SelectItem value="other">Outro</SelectItem>
-          </SelectContent>
-        </Select>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="space-y-2">
+          <label className="text-sm font-medium text-[#E1E2E5]">Placa</label>
+          <Input
+            placeholder="ABC-1234"
+            value={vehicle.plate}
+            onChange={(e) => handleChange("plate", e.target.value)}
+            className="bg-[#1A1F35] border-[#2A2F45] text-[#E1E2E5]"
+          />
+        </div>
+        <div className="space-y-2">
+          <label className="text-sm font-medium text-[#E1E2E5]">Marca/Modelo</label>
+          <Input
+            placeholder="Ex: Fiat Uno"
+            value={vehicle.brand}
+            onChange={(e) => handleChange("brand", e.target.value)}
+            className="bg-[#1A1F35] border-[#2A2F45] text-[#E1E2E5]"
+          />
+        </div>
+        <div className="space-y-2">
+          <label className="text-sm font-medium text-[#E1E2E5]">Cor</label>
+          <Input
+            placeholder="Ex: Prata"
+            value={vehicle.color}
+            onChange={(e) => handleChange("color", e.target.value)}
+            className="bg-[#1A1F35] border-[#2A2F45] text-[#E1E2E5]"
+          />
+        </div>
       </div>
-
       <div className="space-y-2">
-        <label className="text-sm font-medium">Marca/Modelo</label>
-        <Input
-          placeholder="Ex: Fiat Uno"
-          value={vehicle.model}
-          onChange={(e) => handleChange("model", e.target.value)}
-        />
-      </div>
-
-      <div className="space-y-2">
-        <label className="text-sm font-medium">Placa</label>
-        <Input
-          placeholder="Ex: ABC1234"
-          value={vehicle.plate}
-          onChange={(e) => handleChange("plate", e.target.value)}
-        />
-      </div>
-
-      <div className="space-y-2">
-        <label className="text-sm font-medium">Observações</label>
-        <Input
-          placeholder="Observações sobre o veículo"
-          value={vehicle.observations || ""}
+        <label className="text-sm font-medium text-[#E1E2E5]">Observações do Veículo</label>
+        <Textarea
+          placeholder="Observações sobre o veículo..."
+          value={vehicle.observations}
           onChange={(e) => handleChange("observations", e.target.value)}
+          className="bg-[#1A1F35] border-[#2A2F45] text-[#E1E2E5]"
         />
       </div>
     </div>
