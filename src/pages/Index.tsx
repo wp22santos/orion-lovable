@@ -23,6 +23,8 @@ const Index = () => {
     }
   });
 
+  console.log("Abordagens carregadas:", approaches);
+
   const filteredApproaches = approaches.filter((approach) =>
     approach.pessoas?.some(
       (pessoa) =>
@@ -40,8 +42,8 @@ const Index = () => {
     id: approach.id,
     name: approach.pessoas[0]?.dados.nome || "Sem nome",
     date: new Date(approach.date).toLocaleDateString(),
-    location: approach.location,
-    imageUrl: approach.pessoas[0]?.dados.foto,
+    location: approach.location || approach.address || "Localização não informada",
+    imageUrl: approach.pessoas[0]?.dados.foto || "",
     companions: approach.pessoas.slice(1).map(p => p.dados.nome),
     motherName: approach.pessoas[0]?.dados.nomeMae || "",
     rg: approach.pessoas[0]?.dados.rg || "",
