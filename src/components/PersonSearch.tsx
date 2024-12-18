@@ -74,13 +74,20 @@ export const PersonSearch = ({ onPersonFound }: PersonSearchProps) => {
   }, [debouncedSearch, toast]);
 
   const handlePersonSelect = (person: UniquePerson) => {
+    const photos: Photo[] = person.dados.fotos.map(photo => ({
+      id: crypto.randomUUID(),
+      url: photo.url,
+      timestamp: Date.now(),
+      isPerfil: photo.isPerfil
+    }));
+
     const personData = {
       id: person.id,
       name: person.dados.nome,
       motherName: person.dados.nomeMae,
       rg: person.dados.rg,
       cpf: person.dados.cpf,
-      photos: person.dados.fotos || [],
+      photos: photos,
       endereco: person.endereco,
     };
 

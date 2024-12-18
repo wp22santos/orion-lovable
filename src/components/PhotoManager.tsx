@@ -2,11 +2,7 @@ import { useState } from "react";
 import { Camera, X } from "lucide-react";
 import { Button } from "./ui/button";
 import { toast } from "sonner";
-
-interface Photo {
-  url: string;
-  isPerfil: boolean;
-}
+import { Photo } from "@/types/person";
 
 interface PhotoManagerProps {
   photos: Photo[];
@@ -38,8 +34,10 @@ export const PhotoManager = ({ photos = [], onChange, maxPhotos = 10 }: PhotoMan
           const reader = new FileReader();
           
           reader.onloadend = () => {
-            const newPhoto = {
+            const newPhoto: Photo = {
+              id: crypto.randomUUID(),
               url: reader.result as string,
+              timestamp: Date.now(),
               isPerfil: photos.length === 0 // Primeira foto é automaticamente definida como perfil
             };
             
@@ -100,7 +98,7 @@ export const PhotoManager = ({ photos = [], onChange, maxPhotos = 10 }: PhotoMan
       {photos.length > 0 && (
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
           {photos.map((photo, index) => (
-            <div key={index} className="relative group">
+            <div key={photo.id} className="relative group">
               <img
                 src={photo.url}
                 alt={`Foto ${index + 1}`}
