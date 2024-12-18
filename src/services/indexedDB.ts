@@ -80,35 +80,35 @@ class IndexedDBService {
         console.log("Atualizando estrutura do banco de dados");
         const db = (event.target as IDBOpenDBRequest).result;
         
-        if (db.objectStoreNames.contains('approaches')) {
-          db.deleteObjectStore('approaches');
+        if (!db.objectStoreNames.contains('approaches')) {
+          const store = db.createObjectStore('approaches', { keyPath: 'id' });
+          store.createIndex('date', 'date', { unique: false });
+          console.log("Store 'approaches' criada com sucesso");
         }
-        
-        const store = db.createObjectStore('approaches', { keyPath: 'id' });
-        store.createIndex('date', 'date', { unique: false });
-        console.log("Store 'approaches' criada/atualizada com sucesso");
       };
     });
   }
 
   async addApproach(approach: Approach): Promise<void> {
     if (!this.db) {
-      console.log("Inicializando banco de dados...");
       await this.initDB();
     }
     
     return new Promise((resolve, reject) => {
       const transaction = this.db!.transaction(['approaches'], 'readwrite');
       const store = transaction.objectStore('approaches');
-      console.log("Salvando abordagem:", approach);
       const request = store.add(approach);
 
       request.onerror = () => {
         console.error("Erro ao salvar abordagem:", request.error);
         reject(request.error);
       };
-      request.onsuccess = () => {
+
+      request.onsuccess = async () => {
         console.log("Abordagem salva com sucesso");
+        // Tenta criar backup automático após salvar
+        const allData = await this.getApproaches();
+        await backupService.saveBackup(allData);
         resolve();
       };
     });
@@ -116,7 +116,6 @@ class IndexedDBService {
 
   async getApproaches(): Promise<Approach[]> {
     if (!this.db) {
-      console.log("Inicializando banco de dados para busca...");
       await this.initDB();
     }
 
@@ -136,6 +135,23 @@ class IndexedDBService {
         resolve(approaches);
       };
     });
+  }
+
+  async restoreFromBackup(data: Approach[]): Promise<void> {
+    if (!this.db) {
+      await this.initDB();
+    }
+
+    const transaction = this.db!.transaction(['approaches'], 'readwrite');
+    const store = transaction.objectStore('approaches');
+
+    // Limpa dados existentes
+    await store.clear();
+
+    // Adiciona dados do backup
+    for (const approach of data) {
+      await store.add(approach);
+    }
   }
 
   async getApproachById(id: string): Promise<Approach | null> {
