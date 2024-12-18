@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { MapPin } from "lucide-react";
@@ -16,7 +16,7 @@ interface LocationFormProps {
 
 export const LocationForm = ({ formData, onChange }: LocationFormProps) => {
   const { toast } = useToast();
-  const { getLocation } = useGeolocation();
+  const { loading, getLocation } = useGeolocation();
   const [isLoadingLocation, setIsLoadingLocation] = useState(false);
 
   const handleGetLocation = async () => {
@@ -29,19 +29,17 @@ export const LocationForm = ({ formData, onChange }: LocationFormProps) => {
         onChange("longitude", location.longitude);
         
         // Atualiza o endereço apenas se tivermos as coordenadas
-        if (location.latitude && location.longitude) {
-          try {
-            const response = await fetch(
-              `https://nominatim.openstreetmap.org/reverse?format=json&lat=${location.latitude}&lon=${location.longitude}`
-            );
-            const data = await response.json();
-            
-            if (data.display_name) {
-              onChange("address", data.display_name);
-            }
-          } catch (error) {
-            console.error("Erro ao obter endereço:", error);
+        try {
+          const response = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${location.latitude}&lon=${location.longitude}`
+          );
+          const data = await response.json();
+          
+          if (data.display_name) {
+            onChange("address", data.display_name);
           }
+        } catch (error) {
+          console.error("Erro ao obter endereço:", error);
         }
       }
     } catch (error) {
@@ -75,7 +73,7 @@ export const LocationForm = ({ formData, onChange }: LocationFormProps) => {
             type="button"
             variant="outline"
             onClick={handleGetLocation}
-            disabled={isLoadingLocation}
+            disabled={isLoadingLocation || loading}
           >
             <MapPin className="w-4 h-4 mr-2" />
             {isLoadingLocation ? "Obtendo..." : "Usar GPS"}
