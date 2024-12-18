@@ -112,19 +112,19 @@ export const AbordagemForm = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100">
-      <div className="container mx-auto px-4 py-6 space-y-6 max-w-3xl animate-fade-in pb-24">
-        <Card className="bg-white/80 backdrop-blur-sm border border-gray-200 p-6 shadow-lg rounded-xl">
+      <div className="px-2 sm:px-4 py-4 space-y-4 max-w-3xl mx-auto animate-fade-in pb-24">
+        <Card className="bg-white/80 backdrop-blur-sm border border-gray-200 p-3 sm:p-6 shadow-lg rounded-xl">
           <LocationForm formData={location} onChange={handleLocationChange} />
         </Card>
 
-        <Card className="bg-white/80 backdrop-blur-sm border border-gray-200 p-6 shadow-lg rounded-xl">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-xl font-medium text-police-dark">Pessoas Abordadas</h2>
+        <Card className="bg-white/80 backdrop-blur-sm border border-gray-200 p-3 sm:p-6 shadow-lg rounded-xl">
+          <div className="flex justify-between items-center mb-4 sm:mb-6 flex-wrap gap-2">
+            <h2 className="text-lg sm:text-xl font-medium text-police-dark">Pessoas Abordadas</h2>
             <Button
               onClick={() => setShowPersonForm(true)}
-              className="bg-police-primary hover:bg-police-dark text-white"
+              className="bg-police-primary hover:bg-police-dark text-white w-full sm:w-auto"
             >
-              <Plus className="w-5 h-5 mr-2" />
+              <Plus className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
               Adicionar Pessoa
             </Button>
           </div>
@@ -137,33 +137,29 @@ export const AbordagemForm = () => {
           )}
 
           {pessoas.length > 0 && (
-            <div className="space-y-4 mt-6">
+            <div className="space-y-3 mt-4">
               {pessoas.map((person) => (
                 <Card 
                   key={person.id} 
-                  className="bg-gray-50/80 backdrop-blur-sm p-4 hover:bg-gray-50/90 
+                  className="bg-gray-50/80 backdrop-blur-sm p-3 sm:p-4 hover:bg-gray-50/90 
                            transition-all duration-200 border border-gray-200 cursor-pointer"
                   onClick={() => {
                     setShowPersonForm(true);
-                    // Edit existing person
-                    const personToEdit = pessoas.find(p => p.id === person.id);
-                    if (personToEdit) {
-                      setPessoas(prev => prev.filter(p => p.id !== person.id));
-                    }
+                    setPessoas(prev => prev.filter(p => p.id !== person.id));
                   }}
                 >
-                  <div className="flex items-center space-x-4">
+                  <div className="flex items-center gap-3">
                     {person.photos?.find(p => p.isPerfil)?.url && (
                       <img
                         src={person.photos.find(p => p.isPerfil)?.url}
                         alt="Foto do abordado"
-                        className="w-16 h-16 rounded-full object-cover border-2 border-gray-200"
+                        className="w-12 h-12 sm:w-16 sm:h-16 rounded-full object-cover border-2 border-gray-200"
                       />
                     )}
-                    <div>
-                      <h3 className="font-medium text-police-dark">{person.name}</h3>
-                      <p className="text-gray-600 text-sm">RG: {person.rg}</p>
-                      <p className="text-gray-600 text-sm">CPF: {person.cpf}</p>
+                    <div className="min-w-0 flex-1">
+                      <h3 className="font-medium text-police-dark truncate">{person.name}</h3>
+                      <p className="text-sm text-gray-600 truncate">RG: {person.rg}</p>
+                      <p className="text-sm text-gray-600 truncate">CPF: {person.cpf}</p>
                     </div>
                   </div>
                 </Card>
@@ -172,14 +168,14 @@ export const AbordagemForm = () => {
           )}
         </Card>
 
-        <div className="fixed bottom-0 left-0 right-0 p-4 bg-white/80 backdrop-blur-md border-t border-gray-200">
-          <div className="container mx-auto max-w-3xl">
+        <div className="fixed bottom-0 left-0 right-0 p-3 sm:p-4 bg-white/80 backdrop-blur-md border-t border-gray-200">
+          <div className="max-w-3xl mx-auto">
             <Button
               onClick={handleSave}
-              className="w-full bg-police-primary hover:bg-police-dark text-white py-6 text-lg
+              className="w-full bg-police-primary hover:bg-police-dark text-white py-4 sm:py-6 text-base sm:text-lg
                        shadow-lg rounded-xl flex items-center justify-center gap-2"
             >
-              <Save className="w-5 h-5" />
+              <Save className="w-4 h-4 sm:w-5 sm:h-5" />
               Salvar Abordagem
             </Button>
           </div>

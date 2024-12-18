@@ -83,18 +83,18 @@ export const LocationForm = ({ formData, onChange }: LocationFormProps) => {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center gap-3 mb-6">
+    <div className="space-y-4">
+      <div className="flex items-center gap-3 mb-4">
         <div className="bg-police-primary p-2 rounded-lg">
-          <MapPin className="w-6 h-6 text-white" />
+          <MapPin className="w-5 h-5 text-white" />
         </div>
-        <h2 className="text-xl font-medium text-police-dark">
+        <h2 className="text-lg sm:text-xl font-medium text-police-dark">
           Localização da Abordagem
         </h2>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
-        <div className="space-y-2 md:col-span-4">
+      <div className="grid grid-cols-1 sm:grid-cols-6 gap-3">
+        <div className="space-y-1.5 sm:col-span-4">
           <label htmlFor="street" className="text-sm font-medium text-police-dark">
             Logradouro
           </label>
@@ -103,11 +103,11 @@ export const LocationForm = ({ formData, onChange }: LocationFormProps) => {
             value={addressDetails.street}
             onChange={(e) => handleAddressChange("street", e.target.value)}
             placeholder="Nome da rua"
-            className="bg-white/50 border-gray-200 h-12"
+            className="bg-white/50 border-gray-200 h-10 sm:h-12"
           />
         </div>
         
-        <div className="space-y-2 md:col-span-2">
+        <div className="space-y-1.5 sm:col-span-2">
           <label htmlFor="number" className="text-sm font-medium text-police-dark">
             Número
           </label>
@@ -116,11 +116,11 @@ export const LocationForm = ({ formData, onChange }: LocationFormProps) => {
             value={addressDetails.number}
             onChange={(e) => handleAddressChange("number", e.target.value)}
             placeholder="Número"
-            className="bg-white/50 border-gray-200 h-12"
+            className="bg-white/50 border-gray-200 h-10 sm:h-12"
           />
         </div>
         
-        <div className="space-y-2 md:col-span-6">
+        <div className="space-y-1.5 sm:col-span-6">
           <label htmlFor="neighborhood" className="text-sm font-medium text-police-dark">
             Bairro
           </label>
@@ -129,7 +129,7 @@ export const LocationForm = ({ formData, onChange }: LocationFormProps) => {
             value={addressDetails.neighborhood}
             onChange={(e) => handleAddressChange("neighborhood", e.target.value)}
             placeholder="Bairro"
-            className="bg-white/50 border-gray-200 h-12"
+            className="bg-white/50 border-gray-200 h-10 sm:h-12"
           />
         </div>
       </div>
@@ -138,13 +138,13 @@ export const LocationForm = ({ formData, onChange }: LocationFormProps) => {
         type="button"
         onClick={handleGetLocation}
         disabled={isLoadingLocation || loading}
-        className="w-full bg-police-primary hover:bg-police-dark text-white h-12
-                 shadow-lg rounded-lg flex items-center justify-center gap-2"
+        className="w-full bg-police-primary hover:bg-police-dark text-white h-10 sm:h-12
+                 shadow-lg rounded-lg flex items-center justify-center gap-2 mt-4"
       >
         {isLoadingLocation ? (
-          <Loader2 className="w-5 h-5 animate-spin" />
+          <Loader2 className="w-4 h-4 sm:w-5 sm:h-5 animate-spin" />
         ) : (
-          <MapPin className="w-5 h-5" />
+          <MapPin className="w-4 h-4 sm:w-5 sm:h-5" />
         )}
         {isLoadingLocation ? "Obtendo localização..." : "Atualizar GPS"}
       </Button>
