@@ -6,6 +6,39 @@ const STORE_NAME = 'approaches';
 
 let dbInstance: IDBPDatabase | null = null;
 
+export interface Approach {
+  id: string;
+  name: string;
+  date: string;
+  location: string;
+  companions?: string[];
+  imageUrl?: string;
+  latitude?: number;
+  longitude?: number;
+  motherName: string;
+  rg: string;
+  cpf: string;
+  address: string;
+  observations?: string;
+  pessoas?: Array<{
+    id: string;
+    dados: {
+      foto: string;
+      nome: string;
+      dataNascimento: string;
+      rg: string;
+      cpf: string;
+      nomeMae: string;
+      nomePai: string;
+      endereco?: string;
+      fotos?: Array<{
+        url: string;
+        isPerfil: boolean;
+      }>;
+    };
+  }>;
+}
+
 // Initialize the database
 const initDB = async () => {
   if (dbInstance) return dbInstance;
@@ -21,44 +54,29 @@ const initDB = async () => {
   return dbInstance;
 };
 
-// Function to add an approach
-export const addApproach = async (approach: any) => {
-  const db = await initDB();
-  await db.put(STORE_NAME, approach);
-};
+export const indexedDBService = {
+  async addApproach(approach: Approach) {
+    const db = await initDB();
+    await db.put(STORE_NAME, approach);
+  },
 
-// Function to get all approaches
-export const getAllApproaches = async () => {
-  const db = await initDB();
-  return await db.getAll(STORE_NAME);
-};
+  async getApproaches() {
+    const db = await initDB();
+    return await db.getAll(STORE_NAME);
+  },
 
-// Function to get an approach by ID
-export const getApproachById = async (id: string) => {
-  const db = await initDB();
-  return await db.get(STORE_NAME, id);
-};
+  async getApproachById(id: string) {
+    const db = await initDB();
+    return await db.get(STORE_NAME, id);
+  },
 
-// Function to delete an approach
-export const deleteApproach = async (id: string) => {
-  const db = await initDB();
-  await db.delete(STORE_NAME, id);
-};
+  async deleteApproach(id: string) {
+    const db = await initDB();
+    await db.delete(STORE_NAME, id);
+  },
 
-// Function to update an approach
-export const updateApproach = async (approach: any) => {
-  const db = await initDB();
-  await db.put(STORE_NAME, approach);
+  async updateApproach(approach: Approach) {
+    const db = await initDB();
+    await db.put(STORE_NAME, approach);
+  }
 };
-
-// Exporting the Approach type
-export interface Approach {
-  id: string;
-  name: string;
-  date: string;
-  location: string;
-  companions?: string[];
-  imageUrl?: string;
-  latitude?: number;
-  longitude?: number;
-}
