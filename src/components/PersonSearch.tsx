@@ -1,7 +1,7 @@
 import { Search } from "lucide-react";
 import { Input } from "./ui/input";
 import { useDebounce } from "@/hooks/useDebounce";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { indexedDBService } from "@/services/indexedDB";
 

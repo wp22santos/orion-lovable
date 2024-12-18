@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { PersonalInfoForm } from "./PersonalInfoForm";
 import { PersonSearch } from "./PersonSearch";
 import { PhotoCapture } from "./PhotoCapture";
+import { useToast } from "@/hooks/use-toast";
 
 interface ApproachedPerson {
   id: string;
@@ -20,6 +21,7 @@ interface ApproachedPersonFormProps {
 }
 
 export const ApproachedPersonForm = ({ onSave, onCancel, existingPerson }: ApproachedPersonFormProps) => {
+  const { toast } = useToast();
   const [photos, setPhotos] = useState<string[]>(existingPerson?.photos || []);
   const [formData, setFormData] = useState({
     name: existingPerson?.name || "",
