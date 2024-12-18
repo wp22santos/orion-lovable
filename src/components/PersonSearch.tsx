@@ -23,6 +23,17 @@ interface UniquePerson {
     complemento: string;
   };
   lastApproachDate: string;
+  dados: {
+    foto: string;
+    nome: string;
+    dataNascimento: string;
+    rg: string;
+    cpf: string;
+    nomeMae: string;
+    nomePai: string;
+    endereco?: string;
+    profilePhoto?: string;
+  };
 }
 
 export const PersonSearch = ({ onPersonFound }: PersonSearchProps) => {
@@ -56,7 +67,8 @@ export const PersonSearch = ({ onPersonFound }: PersonSearchProps) => {
                 nomeMae: person.dados.nomeMae,
                 profilePhoto: person.dados.profilePhoto,
                 endereco: person.endereco,
-                lastApproachDate: approach.date
+                lastApproachDate: approach.date,
+                dados: person.dados
               });
             }
           });
