@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { ApproachedPersonForm } from "@/components/ApproachedPersonForm";
 import { indexedDBService } from "@/services/indexedDB";
 import { toast } from "sonner";
+import { Person } from "@/types/person";
 
 const EditPerson = () => {
   const { id } = useParams();
@@ -14,6 +15,7 @@ const EditPerson = () => {
     const loadPerson = async () => {
       if (!id) return;
       try {
+        console.log("Loading person data for ID:", id);
         const approaches = await indexedDBService.getApproaches();
         let foundPerson = null;
         
@@ -21,6 +23,7 @@ const EditPerson = () => {
           if (approach.pessoas) {
             foundPerson = approach.pessoas.find(p => p.id === id);
             if (foundPerson) {
+              console.log("Found person:", foundPerson);
               setPerson({
                 id: foundPerson.id,
                 name: foundPerson.dados.nome,
@@ -36,11 +39,12 @@ const EditPerson = () => {
         }
         
         if (!foundPerson) {
+          console.log("Person not found");
           toast.error("Pessoa não encontrada");
           navigate("/");
         }
       } catch (error) {
-        console.error("Erro ao carregar dados:", error);
+        console.error("Error loading data:", error);
         toast.error("Erro ao carregar os dados");
       } finally {
         setLoading(false);
@@ -52,6 +56,7 @@ const EditPerson = () => {
 
   const handleSave = async (updatedPerson: any) => {
     try {
+      console.log("Saving updated person:", updatedPerson);
       const approaches = await indexedDBService.getApproaches();
       
       for (const approach of approaches) {
@@ -72,6 +77,7 @@ const EditPerson = () => {
             };
             
             await indexedDBService.updateApproach(approach);
+            console.log("Person data updated successfully");
             toast.success("Dados atualizados com sucesso");
             navigate(`/person/${id}`);
             return;
@@ -79,9 +85,10 @@ const EditPerson = () => {
         }
       }
       
+      console.error("Could not update person data");
       toast.error("Não foi possível atualizar os dados");
     } catch (error) {
-      console.error("Erro ao atualizar dados:", error);
+      console.error("Error updating data:", error);
       toast.error("Erro ao atualizar os dados");
     }
   };
