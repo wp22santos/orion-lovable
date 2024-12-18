@@ -4,6 +4,26 @@ import { ApproachedPersonForm } from "@/components/ApproachedPersonForm";
 import { indexedDBService } from "@/services/indexedDB";
 import { toast } from "sonner";
 
+interface Person {
+  dados: {
+    foto: string;
+    nome: string;
+    dataNascimento: string;
+    rg: string;
+    cpf: string;
+    nomeMae: string;
+    nomePai: string;
+    endereco?: string;
+    profilePhoto?: string;
+  };
+  endereco: {
+    rua: string;
+    numero: string;
+    bairro: string;
+    complemento: string;
+  };
+}
+
 const EditPerson = () => {
   const { id } = useParams();
   const navigate = useNavigate();
