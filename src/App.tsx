@@ -9,6 +9,7 @@ import Index from "./pages/Index";
 import Login from "./pages/Login";
 import ApproachDetails from "./pages/ApproachDetails";
 import PersonProfile from "./pages/PersonProfile";
+import NovaAbordagem from "./pages/NovaAbordagem";
 
 const queryClient = new QueryClient();
 
@@ -45,6 +46,14 @@ const AppRoutes = () => {
         element={
           <ProtectedRoute>
             <PersonProfile />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/nova-abordagem"
+        element={
+          <ProtectedRoute>
+            <NovaAbordagem />
           </ProtectedRoute>
         }
       />

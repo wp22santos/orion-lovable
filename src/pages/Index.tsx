@@ -9,9 +9,8 @@ import { useQuery } from "@tanstack/react-query";
 
 const Index = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [isFormOpen, setIsFormOpen] = useState(false);
-  const { toast } = useToast();
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   const { data: approaches = [] } = useQuery({
     queryKey: ["approaches"],
@@ -23,24 +22,6 @@ const Index = () => {
     approach.rg?.includes(searchTerm) ||
     approach.cpf?.includes(searchTerm)
   );
-
-  const handleFormSubmit = async (data: any) => {
-    try {
-      await indexedDBService.addApproach(data);
-      setIsFormOpen(false);
-      toast({
-        title: "Sucesso",
-        description: "Abordagem registrada com sucesso.",
-      });
-    } catch (error) {
-      console.error("Erro ao salvar abordagem:", error);
-      toast({
-        title: "Erro",
-        description: "Não foi possível salvar a abordagem.",
-        variant: "destructive",
-      });
-    }
-  };
 
   return (
     <div className="min-h-screen bg-[#1A1F35] overflow-auto">
@@ -149,16 +130,10 @@ const Index = () => {
         className="fixed right-6 bottom-6 w-14 h-14 bg-blue-500 hover:bg-blue-600 
                    rounded-full flex items-center justify-center shadow-lg 
                    transition-transform hover:scale-105 active:scale-95"
-        onClick={() => setIsFormOpen(true)}
+        onClick={() => navigate('/nova-abordagem')}
       >
         <Plus size={24} className="text-white" />
       </button>
-
-      <ApproachForm
-        isOpen={isFormOpen}
-        onClose={() => setIsFormOpen(false)}
-        onSubmit={handleFormSubmit}
-      />
     </div>
   );
 };
