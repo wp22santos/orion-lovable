@@ -68,6 +68,12 @@ export const AbordagemForm = () => {
         data: dataAtual,
         latitude: location.latitude || 0,
         longitude: location.longitude || 0,
+        endereco: {
+          rua: "",
+          numero: "",
+          bairro: "",
+          complemento: "",
+        },
         pessoas: pessoas.map(p => ({
           id: p.id,
           dados: {
