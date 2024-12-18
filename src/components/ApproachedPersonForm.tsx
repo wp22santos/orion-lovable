@@ -16,16 +16,17 @@ interface ApproachedPerson {
 interface ApproachedPersonFormProps {
   onSave: (person: ApproachedPerson) => void;
   onCancel: () => void;
+  existingPerson?: ApproachedPerson;
 }
 
-export const ApproachedPersonForm = ({ onSave, onCancel }: ApproachedPersonFormProps) => {
+export const ApproachedPersonForm = ({ onSave, onCancel, existingPerson }: ApproachedPersonFormProps) => {
   const { toast } = useToast();
-  const [photos, setPhotos] = useState<string[]>([]);
+  const [photos, setPhotos] = useState<string[]>(existingPerson?.photos || []);
   const [formData, setFormData] = useState({
-    name: "",
-    motherName: "",
-    rg: "",
-    cpf: "",
+    name: existingPerson?.name || "",
+    motherName: existingPerson?.motherName || "",
+    rg: existingPerson?.rg || "",
+    cpf: existingPerson?.cpf || "",
   });
 
   const handleChange = (field: string, value: string) => {
@@ -88,7 +89,7 @@ export const ApproachedPersonForm = ({ onSave, onCancel }: ApproachedPersonFormP
     }
 
     onSave({
-      id: crypto.randomUUID(),
+      id: existingPerson?.id || crypto.randomUUID(),
       ...formData,
       photos,
     });

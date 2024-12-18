@@ -1,16 +1,13 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Input } from "@/components/ui/input";
-import { MapPin, Users } from "lucide-react";
+import { MapPin } from "lucide-react";
 import { useGeolocation } from "@/hooks/useGeolocation";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { ApproachedPersonForm } from "./ApproachedPersonForm";
 
 interface LocationFormProps {
   formData: {
     address: string;
-    companions: string;
     latitude?: number;
     longitude?: number;
   };
@@ -20,8 +17,6 @@ interface LocationFormProps {
 export const LocationForm = ({ formData, onChange }: LocationFormProps) => {
   const { latitude, longitude, error: geoError, loading } = useGeolocation();
   const { toast } = useToast();
-  const [isAddingPerson, setIsAddingPerson] = useState(false);
-  const [approachedPeople, setApproachedPeople] = useState<any[]>([]);
 
   useEffect(() => {
     if (latitude && longitude && !formData.latitude && !formData.longitude) {
@@ -54,19 +49,25 @@ export const LocationForm = ({ formData, onChange }: LocationFormProps) => {
     }
   };
 
-  const handleAddPerson = () => {
-    setIsAddingPerson(true);
-  };
-
-  const handleSavePerson = (person: any) => {
-    setApproachedPeople((prev) => [...prev, person]);
-    const companions = approachedPeople.map(p => p.name).join(", ");
-    onChange("companions", companions);
-    setIsAddingPerson(false);
-    toast({
-      title: "Sucesso",
-      description: "Pessoa adicionada com sucesso.",
-    });
+  const handleGetLocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          onChange("latitude", latitude);
+          onChange("longitude", longitude);
+          fetchAddress(latitude, longitude);
+        },
+        (error) => {
+          console.error("Erro ao obter localização:", error);
+          toast({
+            title: "Erro",
+            description: "Não foi possível obter sua localização",
+            variant: "destructive",
+          });
+        }
+      );
+    }
   };
 
   return (
@@ -89,7 +90,7 @@ export const LocationForm = ({ formData, onChange }: LocationFormProps) => {
       </div>
 
       {formData.latitude && formData.longitude && (
-        <div className="w-full h-[300px] rounded-lg shadow-md overflow-hidden">
+        <div className="w-full h-[200px] rounded-lg shadow-md overflow-hidden">
           <iframe
             width="100%"
             height="100%"
@@ -105,55 +106,15 @@ export const LocationForm = ({ formData, onChange }: LocationFormProps) => {
       {loading && <p>Carregando localização...</p>}
       {geoError && <p className="text-red-500">Erro ao obter localização: {geoError}</p>}
 
-      <div className="space-y-4">
-        <Button
-          type="button"
-          variant="outline"
-          className="w-full"
-          onClick={handleAddPerson}
-        >
-          <Users className="mr-2 h-4 w-4" />
-          Adicionar Abordado
-        </Button>
-
-        {approachedPeople.length > 0 && (
-          <div className="space-y-2">
-            <h4 className="font-medium">Pessoas Abordadas:</h4>
-            <div className="grid gap-2">
-              {approachedPeople.map((person) => (
-                <div
-                  key={person.id}
-                  className="p-3 bg-gray-50 rounded-lg flex items-center gap-3"
-                >
-                  {person.photos?.[0] && (
-                    <img
-                      src={person.photos[0]}
-                      alt={person.name}
-                      className="w-10 h-10 rounded-full object-cover"
-                    />
-                  )}
-                  <div>
-                    <p className="font-medium">{person.name}</p>
-                    <p className="text-sm text-gray-600">RG: {person.rg}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-      </div>
-
-      <Dialog open={isAddingPerson} onOpenChange={setIsAddingPerson}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle>Adicionar Abordado</DialogTitle>
-          </DialogHeader>
-          <ApproachedPersonForm
-            onSave={handleSavePerson}
-            onCancel={() => setIsAddingPerson(false)}
-          />
-        </DialogContent>
-      </Dialog>
+      <Button
+        type="button"
+        variant="outline"
+        className="w-full"
+        onClick={handleGetLocation}
+      >
+        <MapPin className="mr-2 h-4 w-4" />
+        Usar Localização Atual
+      </Button>
     </div>
   );
 };
