@@ -14,8 +14,7 @@ interface ApproachedPerson {
   motherName: string;
   rg: string;
   cpf: string;
-  photos: string[];
-  profilePhoto?: string | null;
+  fotoPerfil?: string;
   endereco?: {
     rua: string;
     numero: string;
@@ -32,8 +31,7 @@ interface ApproachedPersonFormProps {
 
 export const ApproachedPersonForm = ({ onSave, onCancel, existingPerson }: ApproachedPersonFormProps) => {
   const { toast } = useToast();
-  const [photos, setPhotos] = useState<string[]>(existingPerson?.photos || []);
-  const [profilePhoto, setProfilePhoto] = useState<string | null>(existingPerson?.profilePhoto || null);
+  const [fotoPerfil, setFotoPerfil] = useState<string | undefined>(existingPerson?.fotoPerfil);
   const [formData, setFormData] = useState({
     name: existingPerson?.name || "",
     motherName: existingPerson?.motherName || "",
@@ -68,8 +66,8 @@ export const ApproachedPersonForm = ({ onSave, onCancel, existingPerson }: Appro
       setEndereco(person.endereco);
     }
 
-    if (person.profilePhoto) {
-      setProfilePhoto(person.profilePhoto);
+    if (person.fotoPerfil) {
+      setFotoPerfil(person.fotoPerfil);
     }
   };
 
@@ -87,9 +85,8 @@ export const ApproachedPersonForm = ({ onSave, onCancel, existingPerson }: Appro
     onSave({
       id: existingPerson?.id || crypto.randomUUID(),
       ...formData,
-      photos,
+      fotoPerfil,
       endereco,
-      profilePhoto
     });
   };
 
@@ -155,11 +152,10 @@ export const ApproachedPersonForm = ({ onSave, onCancel, existingPerson }: Appro
               </div>
 
               <div className="space-y-4">
+                <h4 className="font-medium text-gray-700">Foto</h4>
                 <PhotoCapture 
-                  photos={photos} 
-                  onPhotosChange={setPhotos}
-                  onProfilePhotoChange={setProfilePhoto}
-                  currentProfilePhoto={existingPerson?.profilePhoto}
+                  onPhotoCapture={setFotoPerfil}
+                  currentPhoto={fotoPerfil}
                 />
               </div>
             </div>

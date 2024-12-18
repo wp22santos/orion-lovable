@@ -7,8 +7,7 @@ export interface PersonData {
   nomeMae: string;
   nomePai: string;
   endereco?: string;
-  profilePhoto?: string | null;
-  photos?: string[];
+  fotoPerfil?: string;
 }
 
 export interface Endereco {

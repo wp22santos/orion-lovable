@@ -1,87 +1,48 @@
-import { Camera, User } from "lucide-react";
+import { Camera } from "lucide-react";
 import { Button } from "./ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 interface PhotoCaptureProps {
-  photos: string[];
-  onPhotosChange: (photos: string[]) => void;
-  onProfilePhotoChange?: (photoUrl: string | null) => void;
-  currentProfilePhoto?: string | null;
+  onPhotoCapture: (photoUrl: string) => void;
+  currentPhoto?: string;
 }
 
-export const PhotoCapture = ({ 
-  photos, 
-  onPhotosChange, 
-  onProfilePhotoChange,
-  currentProfilePhoto 
-}: PhotoCaptureProps) => {
+export const PhotoCapture = ({ onPhotoCapture, currentPhoto }: PhotoCaptureProps) => {
   const { toast } = useToast();
-  const [selectedProfilePhoto, setSelectedProfilePhoto] = useState<string | null>(currentProfilePhoto || null);
-
-  useEffect(() => {
-    if (currentProfilePhoto) {
-      setSelectedProfilePhoto(currentProfilePhoto);
-    }
-  }, [currentProfilePhoto]);
+  const [photo, setPhoto] = useState<string | undefined>(currentPhoto);
 
   const handlePhotoCapture = async () => {
     try {
       const input = document.createElement('input');
       input.type = 'file';
       input.accept = 'image/*';
-      input.multiple = true;
       input.capture = 'environment';
 
       input.onchange = async (e) => {
-        const files = (e.target as HTMLInputElement).files;
-        if (!files) return;
+        const file = (e.target as HTMLInputElement).files?.[0];
+        if (!file) return;
 
-        const newPhotos: string[] = [];
-        for (let i = 0; i < files.length; i++) {
-          const file = files[i];
-          const reader = new FileReader();
-          
-          await new Promise((resolve) => {
-            reader.onloadend = () => {
-              newPhotos.push(reader.result as string);
-              resolve(null);
-            };
-            reader.readAsDataURL(file);
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          const photoUrl = reader.result as string;
+          setPhoto(photoUrl);
+          onPhotoCapture(photoUrl);
+          toast({
+            title: "Foto capturada",
+            description: "A foto foi adicionada com sucesso.",
           });
-        }
-
-        onPhotosChange([...photos, ...newPhotos]);
-        
-        // Don't automatically set the first photo as profile photo
-        if (!selectedProfilePhoto && onProfilePhotoChange) {
-          onProfilePhotoChange(null);
-        }
-
-        toast({
-          title: "Fotos adicionadas",
-          description: `${newPhotos.length} foto(s) adicionada(s) com sucesso.`,
-        });
+        };
+        reader.readAsDataURL(file);
       };
 
       input.click();
     } catch (error) {
-      console.error("Erro ao capturar fotos:", error);
+      console.error("Erro ao capturar foto:", error);
       toast({
         title: "Erro",
-        description: "Não foi possível capturar as fotos.",
+        description: "Não foi possível capturar a foto.",
         variant: "destructive",
-      });
-    }
-  };
-
-  const handleSetProfilePhoto = (photoUrl: string) => {
-    setSelectedProfilePhoto(photoUrl);
-    if (onProfilePhotoChange) {
-      onProfilePhotoChange(photoUrl);
-      toast({
-        title: "Foto de perfil definida",
-        description: "A foto foi definida como foto de perfil.",
       });
     }
   };
@@ -96,32 +57,16 @@ export const PhotoCapture = ({
                  backdrop-blur-sm transition-all duration-300 group"
       >
         <Camera className="mr-2 h-4 w-4 group-hover:scale-110 transition-transform" />
-        Adicionar Fotos
+        {photo ? 'Alterar Foto' : 'Capturar Foto'}
       </Button>
 
-      {photos.length > 0 && (
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-          {photos.map((photo, index) => (
-            <div key={index} className="relative group">
-              <img
-                src={photo}
-                alt={`Foto ${index + 1}`}
-                className={`aspect-square object-cover rounded-lg transition-all duration-300 
-                          ${selectedProfilePhoto === photo ? 'ring-2 ring-blue-500' : ''}`}
-              />
-              <Button
-                type="button"
-                variant="secondary"
-                size="sm"
-                onClick={() => handleSetProfilePhoto(photo)}
-                className="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 
-                         transition-opacity duration-300 bg-white/90 hover:bg-white"
-              >
-                <User className="w-4 h-4 mr-1" />
-                {selectedProfilePhoto === photo ? 'Foto de Perfil' : 'Definir como Perfil'}
-              </Button>
-            </div>
-          ))}
+      {photo && (
+        <div className="relative">
+          <img
+            src={photo}
+            alt="Foto capturada"
+            className="w-full h-48 object-cover rounded-lg"
+          />
         </div>
       )}
     </div>

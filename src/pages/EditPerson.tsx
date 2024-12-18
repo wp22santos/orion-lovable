@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import { ApproachedPersonForm } from "@/components/ApproachedPersonForm";
 import { indexedDBService } from "@/services/indexedDB";
 import { toast } from "sonner";
-import { Person } from "@/types/person";
 
 const EditPerson = () => {
   const { id } = useParams();
@@ -28,8 +27,7 @@ const EditPerson = () => {
                 motherName: foundPerson.dados.nomeMae,
                 rg: foundPerson.dados.rg,
                 cpf: foundPerson.dados.cpf,
-                photos: foundPerson.dados.photos || [],
-                profilePhoto: foundPerson.dados.profilePhoto || null,
+                fotoPerfil: foundPerson.dados.fotoPerfil,
                 endereco: foundPerson.endereco
               });
               break;
@@ -68,8 +66,7 @@ const EditPerson = () => {
                 nomeMae: updatedPerson.motherName,
                 rg: updatedPerson.rg,
                 cpf: updatedPerson.cpf,
-                profilePhoto: updatedPerson.profilePhoto,
-                photos: updatedPerson.photos || []
+                fotoPerfil: updatedPerson.fotoPerfil
               },
               endereco: updatedPerson.endereco
             };
