@@ -19,13 +19,18 @@ export const RelatedApproaches = ({ personId, currentApproachId }: RelatedApproa
       try {
         console.log("Carregando abordagens relacionadas para:", personId);
         const approaches = await indexedDBService.getApproaches();
+        console.log("Todas as abordagens:", approaches);
         
-        // Filtra abordagens onde a pessoa aparece como acompanhante
-        const related = approaches.filter(approach => 
-          approach.id !== currentApproachId && 
-          (approach.companions?.includes(personId) || 
-           approach.id === personId)
-        );
+        // Filtra abordagens onde a pessoa aparece como alvo principal ou acompanhante
+        const related = approaches.filter(approach => {
+          // Verifica se a pessoa está na lista de pessoas da abordagem
+          const isPrincipal = approach.pessoas?.some(p => p.id === personId);
+          // Verifica se a pessoa está na lista de acompanhantes
+          const isCompanion = approach.companions?.includes(personId);
+          
+          // Retorna true se a pessoa for principal ou acompanhante, exceto para a abordagem atual
+          return (isPrincipal || isCompanion) && approach.id !== currentApproachId;
+        });
 
         console.log("Abordagens relacionadas encontradas:", related);
         setRelatedApproaches(related);
