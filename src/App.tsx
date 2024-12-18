@@ -11,7 +11,6 @@ import ApproachDetails from "./pages/ApproachDetails";
 import PersonProfile from "./pages/PersonProfile";
 import NovaAbordagem from "./pages/NovaAbordagem";
 import EditPerson from "./pages/EditPerson";
-import Menu from "./pages/Menu";
 
 const queryClient = new QueryClient();
 
@@ -27,7 +26,8 @@ const AppRoutes = () => {
   const { isAuthenticated } = useAuth();
 
   return (
-    <div className="min-h-screen pb-16 md:pb-0">
+    <div className="min-h-screen pt-16 md:pt-0">
+      {isAuthenticated && <MobileNavigation />}
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route
@@ -70,16 +70,7 @@ const AppRoutes = () => {
             </ProtectedRoute>
           }
         />
-        <Route
-          path="/menu"
-          element={
-            <ProtectedRoute>
-              <Menu />
-            </ProtectedRoute>
-          }
-        />
       </Routes>
-      {isAuthenticated && <MobileNavigation />}
     </div>
   );
 };
