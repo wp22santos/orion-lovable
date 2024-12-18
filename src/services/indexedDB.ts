@@ -1,101 +1,57 @@
-import { backupService } from './backupService';
-import { Approach } from '@/types/person';
+import { openDB } from 'idb';
 
-class IndexedDBService {
-  private dbName = 'policeRecordsDB';
-  private version = 1;
-  private db: IDBDatabase | null = null;
-  private dbPromise: Promise<IDBDatabase> | null = null;
+const DB_NAME = 'police-app';
+const DB_VERSION = 1;
+const STORE_NAME = 'approaches';
 
-  private async getDB(): Promise<IDBDatabase> {
-    if (this.db) return this.db;
-    if (this.dbPromise) return this.dbPromise;
+// Initialize the database
+const initDB = async () => {
+  const db = await openDB(DB_NAME, DB_VERSION, {
+    upgrade(db) {
+      db.createObjectStore(STORE_NAME, { keyPath: 'id' });
+    },
+  });
+  return db;
+};
 
-    this.dbPromise = new Promise((resolve, reject) => {
-      const request = indexedDB.open(this.dbName, this.version);
+// Function to add an approach
+export const addApproach = async (approach) => {
+  const db = await initDB();
+  await db.put(STORE_NAME, approach);
+};
 
-      request.onerror = () => {
-        console.error("Error opening database:", request.error);
-        reject(request.error);
-      };
-      
-      request.onsuccess = () => {
-        this.db = request.result;
-        resolve(request.result);
-      };
+// Function to get all approaches
+export const getAllApproaches = async () => {
+  const db = await initDB();
+  return await db.getAll(STORE_NAME);
+};
 
-      request.onupgradeneeded = (event) => {
-        const db = (event.target as IDBOpenDBRequest).result;
-        
-        if (!db.objectStoreNames.contains('approaches')) {
-          const store = db.createObjectStore('approaches', { keyPath: 'id' });
-          store.createIndex('date', 'date', { unique: false });
-        }
-      };
-    });
+// Function to get an approach by ID
+export const getApproachById = async (id) => {
+  const db = await initDB();
+  return await db.get(STORE_NAME, id);
+};
 
-    return this.dbPromise;
-  }
+// Function to delete an approach
+export const deleteApproach = async (id) => {
+  const db = await initDB();
+  await db.delete(STORE_NAME, id);
+};
 
-  async addApproach(approach: Approach): Promise<void> {
-    const db = await this.getDB();
-    
-    return new Promise((resolve, reject) => {
-      const transaction = db.transaction(['approaches'], 'readwrite');
-      const store = transaction.objectStore('approaches');
-      const request = store.add(approach);
+// Function to update an approach
+export const updateApproach = async (approach) => {
+  const db = await initDB();
+  await db.put(STORE_NAME, approach);
+};
 
-      request.onerror = () => reject(request.error);
-      request.onsuccess = async () => {
-        const allData = await this.getApproaches();
-        await backupService.saveBackup(allData);
-        resolve();
-      };
-    });
-  }
-
-  async getApproaches(): Promise<Approach[]> {
-    const db = await this.getDB();
-
-    return new Promise((resolve, reject) => {
-      const transaction = db.transaction(['approaches'], 'readonly');
-      const store = transaction.objectStore('approaches');
-      const request = store.getAll();
-
-      request.onerror = () => reject(request.error);
-      request.onsuccess = () => resolve(request.result);
-    });
-  }
-
-  async getApproachById(id: string): Promise<Approach | null> {
-    const db = await this.getDB();
-
-    return new Promise((resolve, reject) => {
-      const transaction = db.transaction(['approaches'], 'readonly');
-      const store = transaction.objectStore('approaches');
-      const request = store.get(id);
-
-      request.onerror = () => reject(request.error);
-      request.onsuccess = () => resolve(request.result || null);
-    });
-  }
-
-  async updateApproach(approach: Approach): Promise<void> {
-    const db = await this.getDB();
-
-    return new Promise((resolve, reject) => {
-      const transaction = db.transaction(['approaches'], 'readwrite');
-      const store = transaction.objectStore('approaches');
-      const request = store.put(approach);
-
-      request.onerror = () => reject(request.error);
-      request.onsuccess = async () => {
-        const allData = await this.getApproaches();
-        await backupService.saveBackup(allData);
-        resolve();
-      };
-    });
-  }
+// Exporting the Approach type
+export interface Approach {
+  id: string;
+  name: string;
+  date: string;
+  location: string;
+  companions?: string[];
+  imageUrl?: string;
+  latitude?: number;
+  longitude?: number;
 }
-
-export const indexedDBService = new IndexedDBService();

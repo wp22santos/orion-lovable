@@ -3,7 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { MapPin, Loader2 } from "lucide-react";
 import { useGeolocation } from "@/hooks/useGeolocation";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 
 interface LocationFormProps {
   formData: {
@@ -15,7 +15,6 @@ interface LocationFormProps {
 }
 
 export const LocationForm = ({ formData, onChange }: LocationFormProps) => {
-  const { toast } = useToast();
   const { loading, getLocation } = useGeolocation();
   const [isLoadingLocation, setIsLoadingLocation] = useState(false);
   const [addressDetails, setAddressDetails] = useState({
@@ -25,7 +24,14 @@ export const LocationForm = ({ formData, onChange }: LocationFormProps) => {
   });
 
   useEffect(() => {
-    handleGetLocation();
+    // Request GPS permission on component mount
+    if ('permissions' in navigator) {
+      navigator.permissions.query({ name: 'geolocation' }).then((result) => {
+        if (result.state === 'prompt') {
+          toast.info('Por favor, permita o acesso à sua localização para melhor precisão.');
+        }
+      });
+    }
   }, []);
 
   const handleGetLocation = async () => {
@@ -54,19 +60,12 @@ export const LocationForm = ({ formData, onChange }: LocationFormProps) => {
           });
           
           onChange("address", `${street}, ${number} - ${neighborhood}`);
-          toast({
-            title: "Localização obtida",
-            description: "Endereço atualizado com sucesso",
-          });
+          toast.success("Localização obtida com sucesso!");
         }
       }
     } catch (error) {
       console.error("Erro ao obter localização:", error);
-      toast({
-        title: "Erro",
-        description: "Não foi possível obter sua localização",
-        variant: "destructive",
-      });
+      toast.error("Não foi possível obter sua localização. Verifique as permissões do GPS.");
     } finally {
       setIsLoadingLocation(false);
     }
@@ -150,4 +149,3 @@ export const LocationForm = ({ formData, onChange }: LocationFormProps) => {
       </Button>
     </div>
   );
-};
