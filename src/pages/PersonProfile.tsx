@@ -6,25 +6,7 @@ import { Card } from "@/components/ui/card";
 import { RelatedApproaches } from "@/components/RelatedApproaches";
 import { indexedDBService } from "@/services/indexedDB";
 import { toast } from "sonner";
-
-interface Person {
-  dados: {
-    foto: string;
-    nome: string;
-    dataNascimento: string;
-    rg: string;
-    cpf: string;
-    nomeMae: string;
-    nomePai: string;
-    profilePhoto?: string;
-  };
-  endereco: {
-    rua: string;
-    numero: string;
-    bairro: string;
-    complemento: string;
-  };
-}
+import { Person } from "@/types/person";
 
 const PersonProfile = () => {
   const { id } = useParams();

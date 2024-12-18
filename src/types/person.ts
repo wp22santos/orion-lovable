@@ -8,6 +8,7 @@ export interface PersonData {
   nomePai: string;
   endereco?: string;
   profilePhoto?: string | null;
+  photos?: string[];
 }
 
 export interface Endereco {

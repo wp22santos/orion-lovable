@@ -28,8 +28,8 @@ const EditPerson = () => {
                 motherName: foundPerson.dados.nomeMae,
                 rg: foundPerson.dados.rg,
                 cpf: foundPerson.dados.cpf,
-                photos: [],
-                profilePhoto: foundPerson.dados.profilePhoto || null,
+                photos: foundPerson.dados.photos || [],
+                profilePhoto: foundPerson.dados.profilePhoto,
                 endereco: foundPerson.endereco
               });
               break;
@@ -68,7 +68,8 @@ const EditPerson = () => {
                 nomeMae: updatedPerson.motherName,
                 rg: updatedPerson.rg,
                 cpf: updatedPerson.cpf,
-                profilePhoto: updatedPerson.profilePhoto
+                profilePhoto: updatedPerson.profilePhoto,
+                photos: updatedPerson.photos || []
               },
               endereco: updatedPerson.endereco
             };
