@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useState, useEffect } from "react";
 
 type AuthContextType = {
   isAuthenticated: boolean;
@@ -13,10 +13,16 @@ const AuthContext = createContext<AuthContextType>({
 });
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    const stored = localStorage.getItem("isAuthenticated");
+    return stored === "true";
+  });
+
+  useEffect(() => {
+    localStorage.setItem("isAuthenticated", isAuthenticated.toString());
+  }, [isAuthenticated]);
 
   const login = async (email: string, password: string) => {
-    // Simulação de login
     if (email === "policial@exemplo.com" && password === "123456") {
       setIsAuthenticated(true);
     } else {
@@ -26,6 +32,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const signOut = () => {
     setIsAuthenticated(false);
+    localStorage.removeItem("isAuthenticated");
   };
 
   return (

@@ -22,7 +22,6 @@ export interface VehicleInfo {
 export interface PersonData {
   foto: string;
   fotos: Photo[];
-  profilePhoto?: string;
   nome: string;
   dataNascimento: string;
   rg: string;
