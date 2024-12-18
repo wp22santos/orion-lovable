@@ -49,3 +49,18 @@ export interface ApproachedPerson {
   photos: Photo[];
   endereco?: Endereco;
 }
+
+export interface Approach {
+  id: string;
+  name: string;
+  date: string;
+  location: string;
+  companions?: string[];
+  imageUrl?: string;
+  motherName?: string;
+  rg?: string;
+  cpf?: string;
+  address?: string;
+  observations?: string;
+  pessoas?: Person[];
+}
