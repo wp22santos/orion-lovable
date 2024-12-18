@@ -4,7 +4,7 @@ import { useDebounce } from "@/hooks/useDebounce";
 import { useEffect, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { indexedDBService } from "@/services/indexedDB";
-import { Person, PersonData } from "@/types/person";
+import { Person, PersonData, Photo } from "@/types/person";
 
 interface PersonSearchProps {
   onPersonFound: (person: any) => void;
@@ -12,6 +12,10 @@ interface PersonSearchProps {
 
 interface UniquePerson extends Person {
   lastApproachDate: string;
+  dados: PersonData & {
+    fotos: Photo[];
+    profilePhoto?: string;
+  };
 }
 
 export const PersonSearch = ({ onPersonFound }: PersonSearchProps) => {
@@ -40,6 +44,11 @@ export const PersonSearch = ({ onPersonFound }: PersonSearchProps) => {
               peopleMap.set(personKey, {
                 ...person,
                 lastApproachDate: approach.date,
+                dados: {
+                  ...person.dados,
+                  fotos: person.dados.fotos || [],
+                  profilePhoto: person.dados.profilePhoto
+                }
               });
             }
           });

@@ -135,9 +135,9 @@ export const AbordagemForm = () => {
                            transition-all duration-200 border border-gray-200"
                 >
                   <div className="flex items-center space-x-4">
-                    {person.photos?.[0] && (
+                    {person.photos?.find(p => p.isPerfil)?.url && (
                       <img
-                        src={person.photos[0]}
+                        src={person.photos.find(p => p.isPerfil)?.url}
                         alt="Foto do abordado"
                         className="w-16 h-16 rounded-full object-cover border-2 border-gray-200"
                       />

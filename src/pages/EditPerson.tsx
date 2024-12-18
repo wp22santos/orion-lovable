@@ -71,7 +71,8 @@ const EditPerson = () => {
                 nomeMae: updatedPerson.motherName,
                 rg: updatedPerson.rg,
                 cpf: updatedPerson.cpf,
-                profilePhoto: updatedPerson.profilePhoto
+                fotos: updatedPerson.photos,
+                profilePhoto: updatedPerson.photos.find((p: Photo) => p.isPerfil)?.url
               },
               endereco: updatedPerson.endereco
             };
