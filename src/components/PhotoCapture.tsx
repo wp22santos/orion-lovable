@@ -6,7 +6,7 @@ import { useState, useEffect } from "react";
 interface PhotoCaptureProps {
   photos: string[];
   onPhotosChange: (photos: string[]) => void;
-  onProfilePhotoChange?: (photoUrl: string) => void;
+  onProfilePhotoChange?: (photoUrl: string | null) => void;
   currentProfilePhoto?: string | null;
 }
 
@@ -52,6 +52,12 @@ export const PhotoCapture = ({
         }
 
         onPhotosChange([...photos, ...newPhotos]);
+        
+        // Don't automatically set the first photo as profile photo
+        if (!selectedProfilePhoto && onProfilePhotoChange) {
+          onProfilePhotoChange(null);
+        }
+
         toast({
           title: "Fotos adicionadas",
           description: `${newPhotos.length} foto(s) adicionada(s) com sucesso.`,
