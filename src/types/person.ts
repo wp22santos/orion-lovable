@@ -1,3 +1,8 @@
+export interface Photo {
+  url: string;
+  isPerfil: boolean;
+}
+
 export interface PersonData {
   foto: string;
   nome: string;
@@ -7,10 +12,8 @@ export interface PersonData {
   nomeMae: string;
   nomePai: string;
   endereco?: string;
-  fotos: {
-    url: string;
-    isPerfil: boolean;
-  }[];
+  fotos: Photo[];
+  profilePhoto?: string;
 }
 
 export interface Endereco {
@@ -24,4 +27,14 @@ export interface Person {
   id: string;
   dados: PersonData;
   endereco: Endereco;
+}
+
+export interface ApproachedPerson {
+  id: string;
+  name: string;
+  motherName: string;
+  rg: string;
+  cpf: string;
+  photos: Photo[];
+  endereco?: Endereco;
 }

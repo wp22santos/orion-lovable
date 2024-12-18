@@ -7,23 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { ApproachedPersonForm } from "./ApproachedPersonForm";
 import { Plus, Save } from "lucide-react";
 import { toast } from "sonner";
-
-interface Endereco {
-  rua: string;
-  numero: string;
-  bairro: string;
-  complemento: string;
-}
-
-interface ApproachedPerson {
-  id: string;
-  name: string;
-  motherName: string;
-  rg: string;
-  cpf: string;
-  photos: string[];
-  endereco?: Endereco;
-}
+import { ApproachedPerson, Endereco } from "@/types/person";
 
 export const AbordagemForm = () => {
   const navigate = useNavigate();
@@ -54,6 +38,7 @@ export const AbordagemForm = () => {
 
       const dataAtual = new Date().toISOString();
       const mainPerson = pessoas[0];
+      const profilePhoto = mainPerson.photos.find(p => p.isPerfil)?.url;
 
       const abordagem = {
         id: crypto.randomUUID(),
@@ -63,7 +48,7 @@ export const AbordagemForm = () => {
         motherName: mainPerson.motherName,
         rg: mainPerson.rg,
         cpf: mainPerson.cpf,
-        imageUrl: mainPerson.photos?.[0] || "",
+        imageUrl: profilePhoto || "",
         address: location.address,
         data: dataAtual,
         latitude: location.latitude || 0,
@@ -77,7 +62,7 @@ export const AbordagemForm = () => {
         pessoas: pessoas.map(p => ({
           id: p.id,
           dados: {
-            foto: p.photos?.[0] || "",
+            foto: p.photos.find(photo => photo.isPerfil)?.url || "",
             nome: p.name,
             dataNascimento: "",
             rg: p.rg,
@@ -85,6 +70,8 @@ export const AbordagemForm = () => {
             nomeMae: p.motherName,
             nomePai: "",
             endereco: location.address,
+            fotos: p.photos,
+            profilePhoto: p.photos.find(photo => photo.isPerfil)?.url || ""
           },
           endereco: p.endereco || {
             rua: "",

@@ -6,24 +6,8 @@ import { PhotoManager } from "./PhotoManager";
 import { Card } from "@/components/ui/card";
 import { X } from "lucide-react";
 import { Input } from "./ui/input";
-
-interface ApproachedPerson {
-  id: string;
-  name: string;
-  motherName: string;
-  rg: string;
-  cpf: string;
-  photos: {
-    url: string;
-    isPerfil: boolean;
-  }[];
-  endereco?: {
-    rua: string;
-    numero: string;
-    bairro: string;
-    complemento: string;
-  };
-}
+import { toast } from "sonner";
+import { ApproachedPerson, Endereco, Photo } from "@/types/person";
 
 interface ApproachedPersonFormProps {
   onSave: (person: ApproachedPerson) => void;
@@ -39,8 +23,8 @@ export const ApproachedPersonForm = ({ onSave, onCancel, existingPerson }: Appro
     cpf: existingPerson?.cpf || "",
   });
   
-  const [photos, setPhotos] = useState(existingPerson?.photos || []);
-  const [endereco, setEndereco] = useState(existingPerson?.endereco || {
+  const [photos, setPhotos] = useState<Photo[]>(existingPerson?.photos || []);
+  const [endereco, setEndereco] = useState<Endereco>(existingPerson?.endereco || {
     rua: "",
     numero: "",
     bairro: "",
