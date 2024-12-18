@@ -71,7 +71,7 @@ export const PersonalInfoDisplay = ({ person }: PersonalInfoDisplayProps) => {
         <Button
           onClick={handleEditClick}
           variant="ghost"
-          className="text-[#5C5F70] hover:text-[#E1E2E5] hover:bg-[#2A2F45]"
+          className="text-[#5C5F70] hover:text-[#E1E2E5] hover:bg-[#2A2F45] transition-all duration-300"
         >
           <Edit className="w-5 h-5" />
         </Button>
