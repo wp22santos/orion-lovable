@@ -15,9 +15,11 @@ const Index = () => {
   const { data: approaches = [], isLoading } = useQuery({
     queryKey: ["approaches"],
     queryFn: indexedDBService.getApproaches,
-    onError: (error) => {
-      toast.error("Erro ao carregar abordagens");
-      console.error("Erro ao carregar abordagens:", error);
+    meta: {
+      onError: (error: Error) => {
+        toast.error("Erro ao carregar abordagens");
+        console.error("Erro ao carregar abordagens:", error);
+      }
     }
   });
 
@@ -40,7 +42,15 @@ const Index = () => {
     date: new Date(approach.date).toLocaleDateString(),
     location: approach.location,
     imageUrl: approach.pessoas[0]?.dados.foto,
-    companions: approach.pessoas.slice(1).map(p => p.dados.nome)
+    companions: approach.pessoas.slice(1).map(p => p.dados.nome),
+    // Adding required properties to match Approach type
+    motherName: approach.pessoas[0]?.dados.nomeMae || "",
+    rg: approach.pessoas[0]?.dados.rg || "",
+    cpf: approach.pessoas[0]?.dados.cpf || "",
+    address: approach.endereco?.rua || "",
+    data: approach.data || "",
+    endereco: approach.endereco,
+    pessoas: approach.pessoas
   }));
 
   return (
