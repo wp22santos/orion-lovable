@@ -6,7 +6,7 @@ export const AbordagemHeader = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="bg-police-dark/95 backdrop-blur-sm fixed top-0 left-0 right-0 z-50 border-b border-gray-800">
+    <header className="bg-police-dark/95 backdrop-blur-sm fixed top-0 left-0 right-0 z-50 border-b border-gray-800">
       <div className="max-w-3xl mx-auto">
         <div className="h-16 flex items-center justify-between px-4">
           <Button
@@ -21,6 +21,6 @@ export const AbordagemHeader = () => {
           <div className="w-10" />
         </div>
       </div>
-    </div>
+    </header>
   );
 };

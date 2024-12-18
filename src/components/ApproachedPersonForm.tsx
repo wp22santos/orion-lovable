@@ -5,7 +5,7 @@ import { PersonSearch } from "./PersonSearch";
 import { PhotoCapture } from "./PhotoCapture";
 import { useToast } from "@/hooks/use-toast";
 import { Card } from "@/components/ui/card";
-import { X } from "lucide-react";
+import { X, Camera } from "lucide-react";
 
 interface ApproachedPerson {
   id: string;
@@ -54,7 +54,7 @@ export const ApproachedPersonForm = ({ onSave, onCancel, existingPerson }: Appro
     if (!formData.name) {
       toast({
         title: "Erro",
-        description: "O nome é obrigatório.",
+        description: "O nome é obrigatório",
         variant: "destructive",
       });
       return;
@@ -69,9 +69,9 @@ export const ApproachedPersonForm = ({ onSave, onCancel, existingPerson }: Appro
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6 animate-fade-in">
-      <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-xl rounded-2xl p-6">
+      <Card className="bg-white/80 backdrop-blur-sm border border-gray-200 p-6 rounded-xl">
         <div className="flex justify-between items-center mb-6">
-          <h3 className="text-xl font-medium text-gray-900">Adicionar Pessoa</h3>
+          <h3 className="text-xl font-medium text-police-dark">Dados do Abordado</h3>
           <Button
             type="button"
             variant="ghost"
@@ -88,24 +88,37 @@ export const ApproachedPersonForm = ({ onSave, onCancel, existingPerson }: Appro
           
           <div className="space-y-6">
             <PersonalInfoForm formData={formData} onChange={handleChange} />
-            <PhotoCapture photos={photos} onPhotosChange={setPhotos} />
+            
+            <div className="space-y-4">
+              <PhotoCapture photos={photos} onPhotosChange={setPhotos} />
+              {photos.length === 0 && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="w-full bg-white hover:bg-gray-50 border-gray-200 h-12"
+                  onClick={() => document.getElementById('photo-input')?.click()}
+                >
+                  <Camera className="mr-2 h-5 w-5" />
+                  Capturar Foto
+                </Button>
+              )}
+            </div>
           </div>
 
-          <div className="flex gap-4 pt-4">
+          <div className="flex gap-4 pt-4 border-t border-gray-200">
             <Button 
               type="button" 
               variant="outline" 
               onClick={onCancel}
-              className="flex-1 bg-white hover:bg-gray-50 text-gray-900 border-gray-200 h-12"
+              className="flex-1 bg-white hover:bg-gray-50 text-police-dark border-gray-200 h-12"
             >
               Cancelar
             </Button>
             <Button 
               type="submit"
-              className="flex-1 bg-gradient-to-r from-purple-500 to-blue-500 text-white 
-                       hover:from-purple-600 hover:to-blue-600 h-12 shadow-lg shadow-purple-500/20"
+              className="flex-1 bg-police-primary hover:bg-police-dark text-white h-12"
             >
-              Salvar
+              Adicionar
             </Button>
           </div>
         </div>

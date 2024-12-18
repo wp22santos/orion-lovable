@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { MapPin, Loader2 } from "lucide-react";
 import { useGeolocation } from "@/hooks/useGeolocation";
 import { useToast } from "@/hooks/use-toast";
-import { Card } from "@/components/ui/card";
 
 interface LocationFormProps {
   formData: {
@@ -57,7 +56,7 @@ export const LocationForm = ({ formData, onChange }: LocationFormProps) => {
           onChange("address", `${street}, ${number} - ${neighborhood}`);
           toast({
             title: "Localização obtida",
-            description: "Endereço atualizado com sucesso.",
+            description: "Endereço atualizado com sucesso",
           });
         }
       }
@@ -65,7 +64,7 @@ export const LocationForm = ({ formData, onChange }: LocationFormProps) => {
       console.error("Erro ao obter localização:", error);
       toast({
         title: "Erro",
-        description: "Não foi possível obter sua localização.",
+        description: "Não foi possível obter sua localização",
         variant: "destructive",
       });
     } finally {
@@ -84,74 +83,71 @@ export const LocationForm = ({ formData, onChange }: LocationFormProps) => {
   };
 
   return (
-    <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-xl rounded-2xl p-6">
+    <div className="space-y-6">
       <div className="flex items-center gap-3 mb-6">
-        <div className="bg-gradient-to-br from-purple-500 to-blue-500 p-2 rounded-xl">
+        <div className="bg-police-primary p-2 rounded-lg">
           <MapPin className="w-6 h-6 text-white" />
         </div>
-        <h2 className="text-xl font-medium text-gray-900">
+        <h2 className="text-xl font-medium text-police-dark">
           Localização da Abordagem
         </h2>
       </div>
 
-      <div className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
-          <div className="space-y-2 md:col-span-4">
-            <label htmlFor="street" className="text-sm font-medium text-gray-700">
-              Logradouro
-            </label>
-            <Input
-              id="street"
-              value={addressDetails.street}
-              onChange={(e) => handleAddressChange("street", e.target.value)}
-              placeholder="Nome da rua"
-              className="bg-white/50 border-gray-200 focus:border-purple-500 h-12 text-lg"
-            />
-          </div>
-          
-          <div className="space-y-2 md:col-span-2">
-            <label htmlFor="number" className="text-sm font-medium text-gray-700">
-              Número
-            </label>
-            <Input
-              id="number"
-              value={addressDetails.number}
-              onChange={(e) => handleAddressChange("number", e.target.value)}
-              placeholder="Número"
-              className="bg-white/50 border-gray-200 focus:border-purple-500 h-12 text-lg"
-            />
-          </div>
-          
-          <div className="space-y-2 md:col-span-6">
-            <label htmlFor="neighborhood" className="text-sm font-medium text-gray-700">
-              Bairro
-            </label>
-            <Input
-              id="neighborhood"
-              value={addressDetails.neighborhood}
-              onChange={(e) => handleAddressChange("neighborhood", e.target.value)}
-              placeholder="Bairro"
-              className="bg-white/50 border-gray-200 focus:border-purple-500 h-12 text-lg"
-            />
-          </div>
+      <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
+        <div className="space-y-2 md:col-span-4">
+          <label htmlFor="street" className="text-sm font-medium text-police-dark">
+            Logradouro
+          </label>
+          <Input
+            id="street"
+            value={addressDetails.street}
+            onChange={(e) => handleAddressChange("street", e.target.value)}
+            placeholder="Nome da rua"
+            className="bg-white/50 border-gray-200 h-12"
+          />
         </div>
-
-        <Button
-          type="button"
-          onClick={handleGetLocation}
-          disabled={isLoadingLocation || loading}
-          className="w-full bg-gradient-to-r from-purple-500 to-blue-500 text-white 
-                   hover:from-purple-600 hover:to-blue-600 h-12 text-lg shadow-lg
-                   shadow-purple-500/20 rounded-xl flex items-center justify-center gap-2"
-        >
-          {isLoadingLocation ? (
-            <Loader2 className="w-5 h-5 animate-spin" />
-          ) : (
-            <MapPin className="w-5 h-5" />
-          )}
-          {isLoadingLocation ? "Obtendo localização..." : "Atualizar GPS"}
-        </Button>
+        
+        <div className="space-y-2 md:col-span-2">
+          <label htmlFor="number" className="text-sm font-medium text-police-dark">
+            Número
+          </label>
+          <Input
+            id="number"
+            value={addressDetails.number}
+            onChange={(e) => handleAddressChange("number", e.target.value)}
+            placeholder="Número"
+            className="bg-white/50 border-gray-200 h-12"
+          />
+        </div>
+        
+        <div className="space-y-2 md:col-span-6">
+          <label htmlFor="neighborhood" className="text-sm font-medium text-police-dark">
+            Bairro
+          </label>
+          <Input
+            id="neighborhood"
+            value={addressDetails.neighborhood}
+            onChange={(e) => handleAddressChange("neighborhood", e.target.value)}
+            placeholder="Bairro"
+            className="bg-white/50 border-gray-200 h-12"
+          />
+        </div>
       </div>
-    </Card>
+
+      <Button
+        type="button"
+        onClick={handleGetLocation}
+        disabled={isLoadingLocation || loading}
+        className="w-full bg-police-primary hover:bg-police-dark text-white h-12
+                 shadow-lg rounded-lg flex items-center justify-center gap-2"
+      >
+        {isLoadingLocation ? (
+          <Loader2 className="w-5 h-5 animate-spin" />
+        ) : (
+          <MapPin className="w-5 h-5" />
+        )}
+        {isLoadingLocation ? "Obtendo localização..." : "Atualizar GPS"}
+      </Button>
+    </div>
   );
 };
