@@ -2,8 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { PersonalInfoForm } from "./PersonalInfoForm";
 import { PersonSearch } from "./PersonSearch";
-import { PhotoCapture } from "./PhotoCapture";
-import { useToast } from "@/hooks/use-toast";
+import { PhotoManager } from "./PhotoManager";
 import { Card } from "@/components/ui/card";
 import { X } from "lucide-react";
 import { Input } from "./ui/input";
@@ -14,8 +13,10 @@ interface ApproachedPerson {
   motherName: string;
   rg: string;
   cpf: string;
-  photos?: string[];
-  profilePhotoIndex?: number;
+  photos: {
+    url: string;
+    isPerfil: boolean;
+  }[];
   endereco?: {
     rua: string;
     numero: string;
@@ -31,15 +32,14 @@ interface ApproachedPersonFormProps {
 }
 
 export const ApproachedPersonForm = ({ onSave, onCancel, existingPerson }: ApproachedPersonFormProps) => {
-  const { toast } = useToast();
-  const [photos, setPhotos] = useState<string[]>(existingPerson?.photos || []);
-  const [profilePhotoIndex, setProfilePhotoIndex] = useState<number>(existingPerson?.profilePhotoIndex || 0);
   const [formData, setFormData] = useState({
     name: existingPerson?.name || "",
     motherName: existingPerson?.motherName || "",
     rg: existingPerson?.rg || "",
     cpf: existingPerson?.cpf || "",
   });
+  
+  const [photos, setPhotos] = useState(existingPerson?.photos || []);
   const [endereco, setEndereco] = useState(existingPerson?.endereco || {
     rua: "",
     numero: "",
@@ -70,23 +70,19 @@ export const ApproachedPersonForm = ({ onSave, onCancel, existingPerson }: Appro
 
     if (person.photos) {
       setPhotos(person.photos);
-      setProfilePhotoIndex(person.profilePhotoIndex || 0);
     }
-  };
-
-  const handlePhotoCapture = (newPhotos: string[], newProfilePhotoIndex: number) => {
-    setPhotos(newPhotos);
-    setProfilePhotoIndex(newProfilePhotoIndex);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
     if (!formData.name) {
-      toast({
-        title: "Erro",
-        description: "O nome é obrigatório",
-        variant: "destructive",
-      });
+      toast.error("O nome é obrigatório");
+      return;
+    }
+
+    if (!photos.some(p => p.isPerfil)) {
+      toast.error("É necessário definir uma foto de perfil");
       return;
     }
 
@@ -94,7 +90,6 @@ export const ApproachedPersonForm = ({ onSave, onCancel, existingPerson }: Appro
       id: existingPerson?.id || crypto.randomUUID(),
       ...formData,
       photos,
-      profilePhotoIndex,
       endereco,
     });
   };
@@ -162,10 +157,10 @@ export const ApproachedPersonForm = ({ onSave, onCancel, existingPerson }: Appro
 
               <div className="space-y-4">
                 <h4 className="font-medium text-gray-700">Fotos</h4>
-                <PhotoCapture 
-                  onPhotoCapture={handlePhotoCapture}
-                  currentPhotos={photos}
-                  currentProfilePhotoIndex={profilePhotoIndex}
+                <PhotoManager 
+                  photos={photos}
+                  onChange={setPhotos}
+                  maxPhotos={10}
                 />
               </div>
             </div>
@@ -183,7 +178,7 @@ export const ApproachedPersonForm = ({ onSave, onCancel, existingPerson }: Appro
                 type="submit"
                 className="flex-1 bg-police-primary hover:bg-police-dark text-white h-12"
               >
-                Adicionar
+                Salvar
               </Button>
             </div>
           </div>
