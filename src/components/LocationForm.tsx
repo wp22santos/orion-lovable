@@ -39,6 +39,10 @@ export const LocationForm = ({ formData, onChange }: LocationFormProps) => {
       const data = await response.json();
       if (data.display_name) {
         onChange("address", data.display_name);
+        toast({
+          title: "Localização obtida",
+          description: "Endereço atualizado com base na sua localização.",
+        });
       }
     } catch (error) {
       console.error("Erro ao buscar endereço:", error);

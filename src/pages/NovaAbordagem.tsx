@@ -137,7 +137,7 @@ const NovaAbordagem = () => {
         title: "Sucesso",
         description: "Abordagem salva com sucesso.",
       });
-      // Limpar formulário ou redirecionar
+      // Redirect or clear form
     } catch (error) {
       console.error("Erro ao salvar abordagem:", error);
       toast({
