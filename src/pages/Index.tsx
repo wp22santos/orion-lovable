@@ -8,15 +8,22 @@ import { Card } from "@/components/ui/card";
 
 interface Person {
   id: string;
-  nome: string;
-  foto?: string;
-  rg?: string;
-  cpf?: string;
-  companions?: Array<{
-    id: string;
+  dados: {
+    foto: string;
     nome: string;
-  }>;
-  lastApproachDate?: string;
+    dataNascimento: string;
+    rg: string;
+    cpf: string;
+    nomeMae: string;
+    nomePai: string;
+    endereco?: string;
+  };
+  endereco: {
+    rua: string;
+    numero: string;
+    bairro: string;
+    complemento: string;
+  };
 }
 
 const Index = () => {
@@ -42,25 +49,13 @@ const Index = () => {
   // Transformar abordagens em lista única de pessoas
   const people = approaches.reduce<Person[]>((acc, approach) => {
     approach.pessoas?.forEach(person => {
-      const existingPerson = acc.find(p => p.id === person.dados.id);
+      const existingPerson = acc.find(p => p.id === person.id);
       
       if (!existingPerson) {
-        // Encontrar companions desta pessoa nesta abordagem
-        const companions = approach.pessoas
-          .filter(p => p.dados.id !== person.dados.id)
-          .map(p => ({
-            id: p.dados.id,
-            nome: p.dados.nome
-          }));
-
         acc.push({
-          id: person.dados.id,
-          nome: person.dados.nome,
-          foto: person.dados.foto,
-          rg: person.dados.rg,
-          cpf: person.dados.cpf,
-          companions,
-          lastApproachDate: approach.date
+          id: person.id,
+          dados: person.dados,
+          endereco: person.endereco
         });
       }
     });
@@ -68,18 +63,13 @@ const Index = () => {
   }, []);
 
   const filteredPeople = people.filter(person =>
-    person.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    person.rg?.includes(searchTerm) ||
-    person.cpf?.includes(searchTerm)
+    person.dados.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    person.dados.rg?.includes(searchTerm) ||
+    person.dados.cpf?.includes(searchTerm)
   );
 
   const handlePersonClick = (personId: string) => {
     navigate(`/person/${personId}`);
-  };
-
-  const handleCompanionClick = (e: React.MouseEvent, companionId: string) => {
-    e.stopPropagation();
-    navigate(`/person/${companionId}`);
   };
 
   return (
@@ -129,44 +119,38 @@ const Index = () => {
               >
                 <div className="flex gap-4">
                   <div className="w-16 h-16 rounded-full bg-gray-100 overflow-hidden flex-shrink-0">
-                    {person.foto ? (
+                    {person.dados.foto ? (
                       <img
-                        src={person.foto}
-                        alt={person.nome}
+                        src={person.dados.foto}
+                        alt={person.dados.nome}
                         className="w-full h-full object-cover"
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center bg-gray-200 text-gray-500 text-xl">
-                        {person.nome.charAt(0)}
+                        {person.dados.nome.charAt(0)}
                       </div>
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
                     <h3 className="font-medium text-gray-900 truncate">
-                      {person.nome}
+                      {person.dados.nome}
                     </h3>
-                    <div className="mt-1 text-sm text-gray-500">
-                      {person.rg && <p className="truncate">RG: {person.rg}</p>}
-                      <p className="truncate">
-                        Última abordagem: {new Date(person.lastApproachDate || "").toLocaleDateString()}
+                    <div className="mt-1 space-y-1">
+                      <p className="text-sm text-gray-600 truncate">
+                        Mãe: {person.dados.nomeMae}
                       </p>
+                      <p className="text-sm text-gray-600">
+                        RG: {person.dados.rg}
+                      </p>
+                      <p className="text-sm text-gray-600">
+                        CPF: {person.dados.cpf}
+                      </p>
+                      {person.endereco && (
+                        <p className="text-sm text-gray-600 truncate">
+                          Endereço: {`${person.endereco.rua}, ${person.endereco.numero} - ${person.endereco.bairro}`}
+                        </p>
+                      )}
                     </div>
-                    {person.companions && person.companions.length > 0 && (
-                      <div className="mt-2">
-                        <p className="text-xs text-gray-500 mb-1">Acompanhantes na última abordagem:</p>
-                        <div className="flex flex-wrap gap-1">
-                          {person.companions.map((companion) => (
-                            <button
-                              key={companion.id}
-                              onClick={(e) => handleCompanionClick(e, companion.id)}
-                              className="text-xs px-2 py-1 bg-gray-100 hover:bg-gray-200 rounded-full text-gray-700 transition-colors"
-                            >
-                              {companion.nome}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                    )}
                   </div>
                 </div>
               </Card>
