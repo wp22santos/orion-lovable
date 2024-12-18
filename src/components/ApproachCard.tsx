@@ -32,11 +32,11 @@ export const ApproachCard = ({ approach, onClick }: ApproachCardProps) => {
 
   return (
     <Card
-      className="p-3 md:p-4 hover:shadow-lg transition-all duration-300 cursor-pointer animate-fade-in bg-white border-transparent hover:border-blue-200"
+      className="p-3 hover:shadow-lg transition-all duration-300 cursor-pointer animate-fade-in bg-white border-transparent hover:border-blue-200"
       onClick={handleCardClick}
     >
-      <div className="flex gap-3 md:gap-4">
-        <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 overflow-hidden shadow-md flex-shrink-0">
+      <div className="flex gap-3">
+        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 overflow-hidden shadow-md flex-shrink-0">
           {approach.imageUrl ? (
             <img
               src={approach.imageUrl}
@@ -44,19 +44,19 @@ export const ApproachCard = ({ approach, onClick }: ApproachCardProps) => {
               className="w-full h-full object-cover"
             />
           ) : (
-            <div className="w-full h-full flex items-center justify-center text-white text-lg md:text-xl font-semibold">
+            <div className="w-full h-full flex items-center justify-center text-white text-lg font-semibold">
               {approach.name.charAt(0)}
             </div>
           )}
         </div>
         <div className="flex-1 min-w-0">
           <h3 
-            className="font-semibold text-base md:text-lg text-blue-600 hover:text-blue-800 cursor-pointer transition-colors truncate"
+            className="font-semibold text-base text-blue-600 hover:text-blue-800 cursor-pointer transition-colors truncate"
             onClick={handleNameClick}
           >
             {approach.name}
           </h3>
-          <div className="flex flex-col gap-1 md:gap-2 mt-2 md:mt-3 text-sm text-gray-600">
+          <div className="flex flex-col gap-1 mt-2 text-sm text-gray-600">
             <div className="flex items-center gap-2">
               <CalendarDays className="w-4 h-4 text-blue-500 flex-shrink-0" />
               <span className="truncate">{approach.date}</span>
