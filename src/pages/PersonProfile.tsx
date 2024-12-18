@@ -4,51 +4,71 @@ import { ArrowLeft, User, FileText, MapPin, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { RelatedApproaches } from "@/components/RelatedApproaches";
-import { indexedDBService, type Approach } from "@/services/indexedDB";
-import { useToast } from "@/hooks/use-toast";
+import { indexedDBService } from "@/services/indexedDB";
+import { toast } from "sonner";
+
+interface Person {
+  dados: {
+    foto: string;
+    nome: string;
+    dataNascimento: string;
+    rg: string;
+    cpf: string;
+    nomeMae: string;
+    nomePai: string;
+  };
+  endereco: {
+    rua: string;
+    numero: string;
+    bairro: string;
+    complemento: string;
+  };
+}
 
 const PersonProfile = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { toast } = useToast();
-  const [person, setPerson] = useState<Approach | null>(null);
+  const [person, setPerson] = useState<Person | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const loadPerson = async () => {
       if (!id) return;
       try {
-        console.log("Carregando perfil da pessoa:", id);
-        const data = await indexedDBService.getApproachById(id);
-        if (!data) {
-          toast({
-            title: "Erro",
-            description: "Perfil não encontrado",
-            variant: "destructive",
-          });
-          navigate("/");
-          return;
+        console.log("Carregando dados da pessoa:", id);
+        const approaches = await indexedDBService.getApproaches();
+        console.log("Abordagens encontradas:", approaches);
+        
+        // Encontrar a pessoa em todas as abordagens
+        for (const approach of approaches) {
+          const foundPerson = approach.pessoas?.find(p => p.id === id);
+          if (foundPerson) {
+            console.log("Pessoa encontrada:", foundPerson);
+            setPerson(foundPerson);
+            break;
+          }
         }
-        setPerson(data);
+        
+        if (!person) {
+          console.log("Pessoa não encontrada");
+          toast.error("Pessoa não encontrada");
+          navigate("/");
+        }
       } catch (error) {
         console.error("Erro ao carregar perfil:", error);
-        toast({
-          title: "Erro",
-          description: "Erro ao carregar os dados do perfil",
-          variant: "destructive",
-        });
+        toast.error("Erro ao carregar os dados do perfil");
       } finally {
         setLoading(false);
       }
     };
 
     loadPerson();
-  }, [id, navigate, toast]);
+  }, [id, navigate]);
 
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">Carregando...</div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-800"></div>
       </div>
     );
   }
@@ -63,8 +83,8 @@ const PersonProfile = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <header className="bg-police-primary text-white sticky top-0 z-10 shadow-md">
-        <div className="container py-6">
+      <header className="bg-gray-800 text-white sticky top-0 z-10 shadow-md">
+        <div className="container mx-auto py-6">
           <Button
             variant="ghost"
             className="text-white hover:text-white/80"
@@ -76,28 +96,28 @@ const PersonProfile = () => {
         </div>
       </header>
 
-      <main className="container py-8">
+      <main className="container mx-auto py-8">
         <Card className="p-6">
           <div className="flex items-center gap-4 mb-6">
             <div className="w-24 h-24 rounded-full bg-gray-200 overflow-hidden">
-              {person.imageUrl ? (
+              {person.dados.foto ? (
                 <img
-                  src={person.imageUrl}
-                  alt={person.name}
+                  src={person.dados.foto}
+                  alt={person.dados.nome}
                   className="w-full h-full object-cover"
                 />
               ) : (
-                <div className="w-full h-full flex items-center justify-center bg-police-primary text-white text-3xl">
-                  {person.name.charAt(0)}
+                <div className="w-full h-full flex items-center justify-center bg-gray-800 text-white text-3xl">
+                  {person.dados.nome.charAt(0)}
                 </div>
               )}
             </div>
             <div>
-              <h1 className="text-2xl font-bold">{person.name}</h1>
+              <h1 className="text-2xl font-bold">{person.dados.nome}</h1>
               <div className="text-gray-600 mt-1">
                 <div className="flex items-center gap-2">
                   <Calendar className="w-4 h-4" />
-                  <span>Última abordagem: {person.date}</span>
+                  <span>Data de Nascimento: {person.dados.dataNascimento}</span>
                 </div>
               </div>
             </div>
@@ -112,37 +132,30 @@ const PersonProfile = () => {
               <div className="grid md:grid-cols-2 gap-4 text-gray-600">
                 <div>
                   <span className="font-medium">Nome da Mãe:</span>
-                  <p>{person.motherName}</p>
+                  <p>{person.dados.nomeMae}</p>
+                </div>
+                <div>
+                  <span className="font-medium">Nome do Pai:</span>
+                  <p>{person.dados.nomePai}</p>
                 </div>
                 <div>
                   <span className="font-medium">RG:</span>
-                  <p>{person.rg}</p>
+                  <p>{person.dados.rg}</p>
                 </div>
                 <div>
                   <span className="font-medium">CPF:</span>
-                  <p>{person.cpf}</p>
+                  <p>{person.dados.cpf}</p>
                 </div>
-                <div>
+                <div className="md:col-span-2">
                   <span className="font-medium">Endereço:</span>
                   <p className="flex items-center gap-2">
                     <MapPin className="w-4 h-4" />
-                    {person.address}
+                    {`${person.endereco.rua}, ${person.endereco.numero} - ${person.endereco.bairro}`}
+                    {person.endereco.complemento && ` (${person.endereco.complemento})`}
                   </p>
                 </div>
               </div>
             </section>
-
-            {person.observations && (
-              <section>
-                <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                  <FileText className="w-5 h-5" />
-                  Observações
-                </h2>
-                <p className="text-gray-600 whitespace-pre-wrap">
-                  {person.observations}
-                </p>
-              </section>
-            )}
 
             <section>
               <RelatedApproaches personId={id!} />
