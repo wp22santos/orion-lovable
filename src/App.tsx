@@ -9,6 +9,7 @@ import Login from "./pages/Login";
 import ApproachDetails from "./pages/ApproachDetails";
 import PersonProfile from "./pages/PersonProfile";
 import NovaAbordagem from "./pages/NovaAbordagem";
+import EditPerson from "./pages/EditPerson";
 
 const queryClient = new QueryClient();
 
@@ -45,6 +46,14 @@ const AppRoutes = () => {
         element={
           <ProtectedRoute>
             <PersonProfile />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/edit-person/:id"
+        element={
+          <ProtectedRoute>
+            <EditPerson />
           </ProtectedRoute>
         }
       />
