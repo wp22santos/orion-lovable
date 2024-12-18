@@ -30,10 +30,8 @@ export interface Approach {
   rg: string;
   cpf: string;
   address: string;
-  observations?: string;
-  companions?: string[];
-  imageUrl?: string;
   data: string;
+  imageUrl?: string;
   endereco: Endereco;
   latitude: number;
   longitude: number;
@@ -53,6 +51,7 @@ export interface Approach {
     veiculo: VehicleInfo;
     observacoes: string;
   }[];
+  companions?: string[];
 }
 
 class IndexedDBService {
@@ -79,13 +78,16 @@ class IndexedDBService {
       request.onupgradeneeded = (event) => {
         console.log("Atualizando estrutura do banco de dados");
         const db = (event.target as IDBOpenDBRequest).result;
-        if (!db.objectStoreNames.contains('approaches')) {
-          const store = db.createObjectStore('approaches', { keyPath: 'id' });
-          store.createIndex('name', 'name', { unique: false });
-          store.createIndex('rg', 'rg', { unique: false });
-          store.createIndex('cpf', 'cpf', { unique: false });
-          console.log("Store 'approaches' criada com sucesso");
+        
+        // Delete existing store if it exists
+        if (db.objectStoreNames.contains('approaches')) {
+          db.deleteObjectStore('approaches');
         }
+        
+        // Create new store with updated schema
+        const store = db.createObjectStore('approaches', { keyPath: 'id' });
+        store.createIndex('date', 'date', { unique: false });
+        console.log("Store 'approaches' criada/atualizada com sucesso");
       };
     });
   }
@@ -128,9 +130,11 @@ class IndexedDBService {
         console.error("Erro ao buscar abordagens:", request.error);
         reject(request.error);
       };
+      
       request.onsuccess = () => {
-        console.log("Abordagens recuperadas com sucesso:", request.result);
-        resolve(request.result);
+        const approaches = request.result;
+        console.log("Abordagens recuperadas:", approaches);
+        resolve(approaches);
       };
     });
   }
@@ -151,28 +155,6 @@ class IndexedDBService {
         console.log("Abordagem recuperada por ID:", request.result);
         resolve(request.result || null);
       };
-    });
-  }
-
-  async searchApproaches(query: string): Promise<Approach[]> {
-    const approaches = await this.getApproaches();
-    const searchStr = query.toLowerCase();
-    
-    return approaches.filter(approach => {
-      const searchableStr = `
-        ${approach.name} 
-        ${approach.motherName} 
-        ${approach.rg} 
-        ${approach.cpf} 
-        ${approach.endereco.rua} 
-        ${approach.endereco.numero} 
-        ${approach.endereco.bairro} 
-        ${approach.endereco.complemento} 
-        ${approach.observations || ''} 
-        ${approach.companions?.join(' ') || ''}
-      `.toLowerCase();
-      
-      return searchableStr.includes(searchStr);
     });
   }
 }

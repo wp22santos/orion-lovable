@@ -14,7 +14,12 @@ const Index = () => {
 
   const { data: approaches = [], isLoading } = useQuery({
     queryKey: ["approaches"],
-    queryFn: indexedDBService.getApproaches,
+    queryFn: async () => {
+      console.log("Buscando abordagens...");
+      const data = await indexedDBService.getApproaches();
+      console.log("Abordagens retornadas:", data);
+      return data;
+    },
     meta: {
       onError: (error: Error) => {
         toast.error("Erro ao carregar abordagens");
@@ -22,8 +27,6 @@ const Index = () => {
       }
     }
   });
-
-  console.log("Abordagens carregadas:", approaches);
 
   const filteredApproaches = approaches.filter((approach) =>
     approach.pessoas?.some(
@@ -45,15 +48,6 @@ const Index = () => {
     location: approach.location || approach.address || "Localização não informada",
     imageUrl: approach.pessoas[0]?.dados.foto || "",
     companions: approach.pessoas.slice(1).map(p => p.dados.nome),
-    motherName: approach.pessoas[0]?.dados.nomeMae || "",
-    rg: approach.pessoas[0]?.dados.rg || "",
-    cpf: approach.pessoas[0]?.dados.cpf || "",
-    address: approach.endereco?.rua || "",
-    data: approach.data || "",
-    endereco: approach.endereco,
-    latitude: approach.latitude || 0,
-    longitude: approach.longitude || 0,
-    pessoas: approach.pessoas
   }));
 
   return (
