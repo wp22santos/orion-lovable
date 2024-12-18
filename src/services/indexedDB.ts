@@ -174,6 +174,30 @@ class IndexedDBService {
       };
     });
   }
+
+  async updateApproach(approach: Approach): Promise<void> {
+    if (!this.db) {
+      await this.initDB();
+    }
+
+    return new Promise((resolve, reject) => {
+      const transaction = this.db!.transaction(['approaches'], 'readwrite');
+      const store = transaction.objectStore('approaches');
+      const request = store.put(approach);
+
+      request.onerror = () => {
+        console.error("Erro ao atualizar abordagem:", request.error);
+        reject(request.error);
+      };
+
+      request.onsuccess = async () => {
+        console.log("Abordagem atualizada com sucesso");
+        const allData = await this.getApproaches();
+        await backupService.saveBackup(allData);
+        resolve();
+      };
+    });
+  }
 }
 
 export const indexedDBService = new IndexedDBService();
