@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { MapPin } from "lucide-react";
 import { useGeolocation } from "@/hooks/useGeolocation";
@@ -17,6 +17,11 @@ interface LocationFormProps {
 export const LocationForm = ({ formData, onChange }: LocationFormProps) => {
   const { latitude, longitude, error: geoError, loading } = useGeolocation();
   const { toast } = useToast();
+  const [addressDetails, setAddressDetails] = useState({
+    street: "",
+    number: "",
+    neighborhood: "",
+  });
 
   useEffect(() => {
     if (latitude && longitude && !formData.latitude && !formData.longitude) {
@@ -32,13 +37,21 @@ export const LocationForm = ({ formData, onChange }: LocationFormProps) => {
         `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`
       );
       const data = await response.json();
-      if (data.display_name) {
-        onChange("address", data.display_name);
-        toast({
-          title: "Localização obtida",
-          description: "Endereço atualizado com base na sua localização.",
+      
+      if (data.address) {
+        const { road, house_number, suburb, neighbourhood } = data.address;
+        setAddressDetails({
+          street: road || "",
+          number: house_number || "",
+          neighborhood: suburb || neighbourhood || "",
         });
+        onChange("address", data.display_name);
       }
+      
+      toast({
+        title: "Localização obtida",
+        description: "Endereço atualizado com base na sua localização.",
+      });
     } catch (error) {
       console.error("Erro ao buscar endereço:", error);
       toast({
@@ -70,21 +83,54 @@ export const LocationForm = ({ formData, onChange }: LocationFormProps) => {
     }
   };
 
+  const handleAddressChange = (field: string, value: string) => {
+    setAddressDetails(prev => {
+      const newDetails = { ...prev, [field]: value };
+      const fullAddress = `${newDetails.street}, ${newDetails.number}, ${newDetails.neighborhood}`;
+      onChange("address", fullAddress);
+      return newDetails;
+    });
+  };
+
   return (
     <div className="space-y-4">
-      <div className="space-y-2">
-        <label htmlFor="address" className="text-sm font-medium">
-          Endereço *
-        </label>
-        <div className="relative">
-          <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="space-y-2">
+          <label htmlFor="street" className="text-sm font-medium text-white">
+            Logradouro
+          </label>
           <Input
-            id="address"
-            name="address"
-            value={formData.address}
-            onChange={(e) => onChange("address", e.target.value)}
-            className="pl-10"
-            required
+            id="street"
+            value={addressDetails.street}
+            onChange={(e) => handleAddressChange("street", e.target.value)}
+            className="bg-[#1A1F35] text-white border-[#2A2F45]"
+            placeholder="Rua, Avenida..."
+          />
+        </div>
+        
+        <div className="space-y-2">
+          <label htmlFor="number" className="text-sm font-medium text-white">
+            Número
+          </label>
+          <Input
+            id="number"
+            value={addressDetails.number}
+            onChange={(e) => handleAddressChange("number", e.target.value)}
+            className="bg-[#1A1F35] text-white border-[#2A2F45]"
+            placeholder="Número"
+          />
+        </div>
+        
+        <div className="space-y-2">
+          <label htmlFor="neighborhood" className="text-sm font-medium text-white">
+            Bairro
+          </label>
+          <Input
+            id="neighborhood"
+            value={addressDetails.neighborhood}
+            onChange={(e) => handleAddressChange("neighborhood", e.target.value)}
+            className="bg-[#1A1F35] text-white border-[#2A2F45]"
+            placeholder="Bairro"
           />
         </div>
       </div>
@@ -103,13 +149,13 @@ export const LocationForm = ({ formData, onChange }: LocationFormProps) => {
         </div>
       )}
 
-      {loading && <p>Carregando localização...</p>}
+      {loading && <p className="text-white">Carregando localização...</p>}
       {geoError && <p className="text-red-500">Erro ao obter localização: {geoError}</p>}
 
       <Button
         type="button"
         variant="outline"
-        className="w-full"
+        className="w-full bg-[#1A1F35] text-white border-[#2A2F45] hover:bg-[#2A2F45]"
         onClick={handleGetLocation}
       >
         <MapPin className="mr-2 h-4 w-4" />

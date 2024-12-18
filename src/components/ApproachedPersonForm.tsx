@@ -2,7 +2,9 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { PersonalInfoForm } from "./PersonalInfoForm";
 import { useToast } from "@/hooks/use-toast";
-import { Camera } from "lucide-react";
+import { Camera, Search } from "lucide-react";
+import { Input } from "./ui/input";
+import { indexedDBService } from "@/services/indexedDB";
 
 interface ApproachedPerson {
   id: string;
@@ -28,9 +30,61 @@ export const ApproachedPersonForm = ({ onSave, onCancel, existingPerson }: Appro
     rg: existingPerson?.rg || "",
     cpf: existingPerson?.cpf || "",
   });
+  const [searchTerm, setSearchTerm] = useState("");
 
   const handleChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleSearch = async () => {
+    if (!searchTerm) {
+      toast({
+        title: "Erro",
+        description: "Digite um termo para busca",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      const approaches = await indexedDBService.getApproaches();
+      const foundPerson = approaches.find(approach => 
+        approach.rg === searchTerm || 
+        approach.cpf === searchTerm || 
+        approach.name.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+
+      if (foundPerson) {
+        setFormData({
+          name: foundPerson.name,
+          motherName: foundPerson.motherName,
+          rg: foundPerson.rg,
+          cpf: foundPerson.cpf,
+        });
+        
+        // Se houver foto da pessoa encontrada
+        if (foundPerson.pessoas?.[0]?.dados?.foto) {
+          setPhotos([foundPerson.pessoas[0].dados.foto]);
+        }
+
+        toast({
+          title: "Sucesso",
+          description: "Pessoa encontrada!",
+        });
+      } else {
+        toast({
+          title: "Aviso",
+          description: "Nenhuma pessoa encontrada com os dados informados.",
+        });
+      }
+    } catch (error) {
+      console.error("Erro ao buscar pessoa:", error);
+      toast({
+        title: "Erro",
+        description: "Erro ao buscar pessoa",
+        variant: "destructive",
+      });
+    }
   };
 
   const handlePhotoCapture = async () => {
@@ -97,13 +151,30 @@ export const ApproachedPersonForm = ({ onSave, onCancel, existingPerson }: Appro
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
+      <div className="flex gap-4 mb-4">
+        <Input
+          type="text"
+          placeholder="Buscar por nome, RG ou CPF..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="bg-[#1A1F35] text-white border-[#2A2F45]"
+        />
+        <Button
+          type="button"
+          onClick={handleSearch}
+          className="bg-blue-600 hover:bg-blue-700"
+        >
+          <Search className="w-4 h-4" />
+        </Button>
+      </div>
+
       <PersonalInfoForm formData={formData} onChange={handleChange} />
 
       <div className="space-y-4">
         <Button
           type="button"
           variant="outline"
-          className="w-full"
+          className="w-full bg-[#1A1F35] text-white border-[#2A2F45] hover:bg-[#2A2F45]"
           onClick={handlePhotoCapture}
         >
           <Camera className="mr-2 h-4 w-4" />
@@ -126,10 +197,20 @@ export const ApproachedPersonForm = ({ onSave, onCancel, existingPerson }: Appro
       </div>
 
       <div className="flex justify-end gap-4">
-        <Button type="button" variant="outline" onClick={onCancel}>
+        <Button 
+          type="button" 
+          variant="outline" 
+          onClick={onCancel}
+          className="bg-[#1A1F35] text-white border-[#2A2F45] hover:bg-[#2A2F45]"
+        >
           Cancelar
         </Button>
-        <Button type="submit">Salvar</Button>
+        <Button 
+          type="submit"
+          className="bg-green-600 hover:bg-green-700"
+        >
+          Salvar
+        </Button>
       </div>
     </form>
   );
