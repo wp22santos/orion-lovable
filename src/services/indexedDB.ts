@@ -23,6 +23,16 @@ export interface VehicleInfo {
 
 export interface Approach {
   id: string;
+  name: string;
+  date: string;
+  location: string;
+  motherName: string;
+  rg: string;
+  cpf: string;
+  address: string;
+  observations?: string;
+  companions?: string[];
+  imageUrl?: string;
   data: string;
   endereco: Endereco;
   pessoas: {

@@ -43,7 +43,14 @@ export const ApproachList = ({ approaches, onApproachClick }: ApproachListProps)
           transition={{ duration: 0.3, delay: index * 0.1 }}
         >
           <ApproachCard
-            approach={approach}
+            approach={{
+              id: approach.id,
+              name: approach.name,
+              date: approach.date,
+              location: approach.location,
+              companions: approach.companions,
+              imageUrl: approach.imageUrl
+            }}
             onClick={onApproachClick}
           />
         </motion.div>

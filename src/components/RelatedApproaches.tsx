@@ -1,16 +1,8 @@
 import { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
-import { indexedDBService } from "@/services/indexedDB";
+import { indexedDBService, type Approach } from "@/services/indexedDB";
 import { useNavigate } from "react-router-dom";
 import { Users } from "lucide-react";
-
-interface RelatedApproach {
-  id: string;
-  name: string;
-  date: string;
-  location: string;
-  companions?: string[];
-}
 
 interface RelatedApproachesProps {
   personId: string;
@@ -18,7 +10,7 @@ interface RelatedApproachesProps {
 }
 
 export const RelatedApproaches = ({ personId, currentApproachId }: RelatedApproachesProps) => {
-  const [relatedApproaches, setRelatedApproaches] = useState<RelatedApproach[]>([]);
+  const [relatedApproaches, setRelatedApproaches] = useState<Approach[]>([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
