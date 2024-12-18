@@ -29,6 +29,10 @@ const AppRoutes = () => {
   const { isAuthenticated } = useAuth();
   const location = useLocation();
 
+  // Hide FloatingActionButton on specific routes
+  const shouldShowFAB = !location.pathname.includes('/nova-abordagem') && 
+                       !location.pathname.includes('/edit-person');
+
   // Redirect to home if user is authenticated and tries to access login
   if (isAuthenticated && location.pathname === "/login") {
     return <Navigate to="/" replace />;
@@ -36,12 +40,7 @@ const AppRoutes = () => {
 
   return (
     <div className="min-h-screen">
-      {isAuthenticated && (
-        <>
-          <TopNavigation />
-          <FloatingActionButton />
-        </>
-      )}
+      {isAuthenticated && <TopNavigation />}
       <main className={`${isAuthenticated ? 'pt-16' : ''}`}>
         <Routes>
           <Route path="/login" element={<Login />} />
@@ -87,6 +86,7 @@ const AppRoutes = () => {
           />
         </Routes>
       </main>
+      {isAuthenticated && shouldShowFAB && <FloatingActionButton />}
     </div>
   );
 };
