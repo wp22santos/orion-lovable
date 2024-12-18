@@ -4,36 +4,14 @@ import { useDebounce } from "@/hooks/useDebounce";
 import { useEffect, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { indexedDBService } from "@/services/indexedDB";
+import { Person, PersonData } from "@/types/person";
 
 interface PersonSearchProps {
   onPersonFound: (person: any) => void;
 }
 
-interface UniquePerson {
-  id: string;
-  nome: string;
-  rg: string;
-  cpf: string;
-  nomeMae: string;
-  profilePhoto?: string;
-  endereco: {
-    rua: string;
-    numero: string;
-    bairro: string;
-    complemento: string;
-  };
+interface UniquePerson extends Person {
   lastApproachDate: string;
-  dados: {
-    foto: string;
-    nome: string;
-    dataNascimento: string;
-    rg: string;
-    cpf: string;
-    nomeMae: string;
-    nomePai: string;
-    endereco?: string;
-    profilePhoto?: string;
-  };
 }
 
 export const PersonSearch = ({ onPersonFound }: PersonSearchProps) => {
@@ -60,18 +38,8 @@ export const PersonSearch = ({ onPersonFound }: PersonSearchProps) => {
             
             if (!existingPerson || new Date(approach.date) > new Date(existingPerson.lastApproachDate)) {
               peopleMap.set(personKey, {
-                id: person.id,
-                nome: person.dados.nome,
-                rg: person.dados.rg,
-                cpf: person.dados.cpf,
-                nomeMae: person.dados.nomeMae,
-                profilePhoto: person.dados.profilePhoto,
-                endereco: person.endereco,
+                ...person,
                 lastApproachDate: approach.date,
-                dados: {
-                  ...person.dados,
-                  profilePhoto: person.dados.profilePhoto
-                }
               });
             }
           });
@@ -80,9 +48,9 @@ export const PersonSearch = ({ onPersonFound }: PersonSearchProps) => {
         const filteredPeople = Array.from(peopleMap.values()).filter(person => {
           const searchLower = debouncedSearch.toLowerCase();
           return (
-            person.nome.toLowerCase().includes(searchLower) ||
-            person.rg === debouncedSearch ||
-            person.cpf === debouncedSearch
+            person.dados.nome.toLowerCase().includes(searchLower) ||
+            person.dados.rg === debouncedSearch ||
+            person.dados.cpf === debouncedSearch
           );
         });
 
@@ -103,13 +71,13 @@ export const PersonSearch = ({ onPersonFound }: PersonSearchProps) => {
   const handlePersonSelect = (person: UniquePerson) => {
     const personData = {
       id: person.id,
-      name: person.nome,
-      motherName: person.nomeMae,
-      rg: person.rg,
-      cpf: person.cpf,
+      name: person.dados.nome,
+      motherName: person.dados.nomeMae,
+      rg: person.dados.rg,
+      cpf: person.dados.cpf,
       photos: [],
       endereco: person.endereco,
-      profilePhoto: person.profilePhoto
+      profilePhoto: person.dados.profilePhoto
     };
 
     onPersonFound(personData);
@@ -144,21 +112,21 @@ export const PersonSearch = ({ onPersonFound }: PersonSearchProps) => {
                        transition-all duration-200 p-4 border border-gray-200"
             >
               <div className="flex items-center gap-4">
-                {person.profilePhoto ? (
+                {person.dados.profilePhoto ? (
                   <img
-                    src={person.profilePhoto}
-                    alt={person.nome}
+                    src={person.dados.profilePhoto}
+                    alt={person.dados.nome}
                     className="w-12 h-12 rounded-full object-cover border-2 border-gray-200"
                   />
                 ) : (
                   <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center">
-                    <span className="text-gray-500 text-lg">{person.nome.charAt(0)}</span>
+                    <span className="text-gray-500 text-lg">{person.dados.nome.charAt(0)}</span>
                   </div>
                 )}
                 <div>
-                  <h3 className="font-medium text-gray-900">{person.nome}</h3>
-                  <p className="text-sm text-gray-500">RG: {person.rg}</p>
-                  <p className="text-sm text-gray-500">CPF: {person.cpf}</p>
+                  <h3 className="font-medium text-gray-900">{person.dados.nome}</h3>
+                  <p className="text-sm text-gray-500">RG: {person.dados.rg}</p>
+                  <p className="text-sm text-gray-500">CPF: {person.dados.cpf}</p>
                 </div>
               </div>
             </div>
