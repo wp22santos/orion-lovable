@@ -5,9 +5,9 @@ import { LocationForm } from "./LocationForm";
 import { indexedDBService } from "@/services/indexedDB";
 import { useNavigate } from "react-router-dom";
 import { ApproachedPersonForm } from "./ApproachedPersonForm";
-import { Plus, Save } from "lucide-react";
+import { Plus, Save, MapPin, Users } from "lucide-react";
 import { toast } from "sonner";
-import { ApproachedPerson, Endereco } from "@/types/person";
+import { ApproachedPerson } from "@/types/person";
 
 export const AbordagemForm = () => {
   const navigate = useNavigate();
@@ -47,6 +47,11 @@ export const AbordagemForm = () => {
         return;
       }
 
+      if (!location.address) {
+        toast.error("Informe a localização da abordagem");
+        return;
+      }
+
       const dataAtual = new Date().toISOString();
       const mainPerson = pessoas[0];
       const profilePhoto = mainPerson.photos.find(p => p.isPerfil)?.url;
@@ -64,12 +69,6 @@ export const AbordagemForm = () => {
         data: dataAtual,
         latitude: location.latitude || 0,
         longitude: location.longitude || 0,
-        endereco: {
-          rua: "",
-          numero: "",
-          bairro: "",
-          complemento: "",
-        },
         pessoas: pessoas.map(p => ({
           id: p.id,
           dados: {
@@ -98,7 +97,6 @@ export const AbordagemForm = () => {
           },
           observacoes: "",
         })),
-        companions: pessoas.slice(1).map(p => p.name),
       };
 
       await indexedDBService.addApproach(abordagem);
@@ -112,22 +110,96 @@ export const AbordagemForm = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100">
-      <div className="px-2 sm:px-4 py-4 space-y-4 max-w-3xl mx-auto animate-fade-in pb-24">
-        <Card className="bg-white/80 backdrop-blur-sm border border-gray-200 p-3 sm:p-6 shadow-lg rounded-xl">
+      <div className="max-w-3xl mx-auto p-4 space-y-4 animate-fade-in">
+        {/* Step 1: Location */}
+        <Card className="bg-white/80 backdrop-blur-sm border border-gray-200 p-4 rounded-xl shadow-sm">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="bg-police-primary p-2 rounded-lg">
+              <MapPin className="w-5 h-5 text-white" />
+            </div>
+            <h2 className="text-lg font-medium text-police-dark">
+              1. Localização da Abordagem
+            </h2>
+          </div>
           <LocationForm formData={location} onChange={handleLocationChange} />
         </Card>
 
-        <Card className="bg-white/80 backdrop-blur-sm border border-gray-200 p-3 sm:p-6 shadow-lg rounded-xl">
-          <div className="flex justify-between items-center mb-4 sm:mb-6 flex-wrap gap-2">
-            <h2 className="text-lg sm:text-xl font-medium text-police-dark">Pessoas Abordadas</h2>
-            <Button
-              onClick={() => setShowPersonForm(true)}
-              className="bg-police-primary hover:bg-police-dark text-white w-full sm:w-auto"
-            >
-              <Plus className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
-              Adicionar Pessoa
-            </Button>
+        {/* Step 2: People */}
+        <Card className="bg-white/80 backdrop-blur-sm border border-gray-200 p-4 rounded-xl shadow-sm">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="bg-police-primary p-2 rounded-lg">
+              <Users className="w-5 h-5 text-white" />
+            </div>
+            <h2 className="text-lg font-medium text-police-dark">
+              2. Pessoas Abordadas
+            </h2>
           </div>
+
+          {pessoas.length === 0 ? (
+            <div className="text-center py-8 px-4">
+              <Users className="w-12 h-12 mx-auto text-gray-400 mb-3" />
+              <p className="text-gray-600 mb-4">
+                Nenhuma pessoa adicionada ainda
+              </p>
+              <Button
+                onClick={() => setShowPersonForm(true)}
+                className="bg-police-primary hover:bg-police-dark text-white"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Adicionar Pessoa
+              </Button>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              <div className="grid gap-3">
+                {pessoas.map((person) => (
+                  <Card 
+                    key={person.id} 
+                    className="bg-gray-50/80 p-3 hover:bg-gray-50/90 
+                             transition-all duration-200 border border-gray-200 
+                             cursor-pointer"
+                    onClick={() => {
+                      setShowPersonForm(true);
+                      setPessoas(prev => prev.filter(p => p.id !== person.id));
+                    }}
+                  >
+                    <div className="flex items-center gap-3">
+                      {person.photos?.find(p => p.isPerfil)?.url ? (
+                        <img
+                          src={person.photos.find(p => p.isPerfil)?.url}
+                          alt="Foto do abordado"
+                          className="w-12 h-12 rounded-full object-cover border-2 border-gray-200"
+                        />
+                      ) : (
+                        <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center">
+                          <Users className="w-6 h-6 text-gray-400" />
+                        </div>
+                      )}
+                      <div className="min-w-0 flex-1">
+                        <h3 className="font-medium text-police-dark truncate">
+                          {person.name}
+                        </h3>
+                        <p className="text-sm text-gray-600 truncate">
+                          RG: {person.rg || "Não informado"}
+                        </p>
+                        <p className="text-sm text-gray-600 truncate">
+                          CPF: {person.cpf || "Não informado"}
+                        </p>
+                      </div>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+              
+              <Button
+                onClick={() => setShowPersonForm(true)}
+                className="w-full bg-police-primary hover:bg-police-dark text-white"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Adicionar Outra Pessoa
+              </Button>
+            </div>
+          )}
 
           {showPersonForm && (
             <ApproachedPersonForm
@@ -135,47 +207,19 @@ export const AbordagemForm = () => {
               onCancel={() => setShowPersonForm(false)}
             />
           )}
-
-          {pessoas.length > 0 && (
-            <div className="space-y-3 mt-4">
-              {pessoas.map((person) => (
-                <Card 
-                  key={person.id} 
-                  className="bg-gray-50/80 backdrop-blur-sm p-3 sm:p-4 hover:bg-gray-50/90 
-                           transition-all duration-200 border border-gray-200 cursor-pointer"
-                  onClick={() => {
-                    setShowPersonForm(true);
-                    setPessoas(prev => prev.filter(p => p.id !== person.id));
-                  }}
-                >
-                  <div className="flex items-center gap-3">
-                    {person.photos?.find(p => p.isPerfil)?.url && (
-                      <img
-                        src={person.photos.find(p => p.isPerfil)?.url}
-                        alt="Foto do abordado"
-                        className="w-12 h-12 sm:w-16 sm:h-16 rounded-full object-cover border-2 border-gray-200"
-                      />
-                    )}
-                    <div className="min-w-0 flex-1">
-                      <h3 className="font-medium text-police-dark truncate">{person.name}</h3>
-                      <p className="text-sm text-gray-600 truncate">RG: {person.rg}</p>
-                      <p className="text-sm text-gray-600 truncate">CPF: {person.cpf}</p>
-                    </div>
-                  </div>
-                </Card>
-              ))}
-            </div>
-          )}
         </Card>
 
-        <div className="fixed bottom-0 left-0 right-0 p-3 sm:p-4 bg-white/80 backdrop-blur-md border-t border-gray-200">
+        {/* Save Button */}
+        <div className="fixed bottom-0 left-0 right-0 p-4 bg-white/80 backdrop-blur-md border-t border-gray-200">
           <div className="max-w-3xl mx-auto">
             <Button
               onClick={handleSave}
-              className="w-full bg-police-primary hover:bg-police-dark text-white py-4 sm:py-6 text-base sm:text-lg
-                       shadow-lg rounded-xl flex items-center justify-center gap-2"
+              className="w-full bg-police-primary hover:bg-police-dark text-white 
+                       py-6 text-lg shadow-lg rounded-xl flex items-center 
+                       justify-center gap-2"
+              disabled={pessoas.length === 0 || !location.address}
             >
-              <Save className="w-4 h-4 sm:w-5 sm:h-5" />
+              <Save className="w-5 h-5" />
               Salvar Abordagem
             </Button>
           </div>
