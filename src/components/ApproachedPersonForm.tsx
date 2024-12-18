@@ -4,6 +4,7 @@ import { PersonalInfoForm } from "./PersonalInfoForm";
 import { PersonSearch } from "./PersonSearch";
 import { PhotoCapture } from "./PhotoCapture";
 import { useToast } from "@/hooks/use-toast";
+import { Card } from "@/components/ui/card";
 
 interface ApproachedPerson {
   id: string;
@@ -49,10 +50,10 @@ export const ApproachedPersonForm = ({ onSave, onCancel, existingPerson }: Appro
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.name || !formData.motherName || !formData.rg || !formData.cpf) {
+    if (!formData.name) {
       toast({
         title: "Erro",
-        description: "Preencha todos os campos obrigatórios.",
+        description: "O nome é obrigatório.",
         variant: "destructive",
       });
       return;
@@ -66,34 +67,34 @@ export const ApproachedPersonForm = ({ onSave, onCancel, existingPerson }: Appro
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 p-4 max-w-2xl mx-auto">
-      <div className="space-y-6 rounded-lg bg-gradient-to-b from-[#1A1F35]/90 to-[#2A2F45]/90 
-                    backdrop-blur-sm p-6 shadow-xl animate-fade-in">
-        <PersonSearch onPersonFound={handlePersonFound} />
-        
-        <div className="space-y-6 animate-fade-in">
-          <PersonalInfoForm formData={formData} onChange={handleChange} />
-          <PhotoCapture photos={photos} onPhotosChange={setPhotos} />
-        </div>
+    <form onSubmit={handleSubmit} className="space-y-6 animate-fade-in">
+      <Card className="bg-white/80 backdrop-blur-sm border border-gray-100 p-6 shadow-lg rounded-2xl">
+        <div className="space-y-6">
+          <PersonSearch onPersonFound={handlePersonFound} />
+          
+          <div className="space-y-6">
+            <PersonalInfoForm formData={formData} onChange={handleChange} />
+            <PhotoCapture photos={photos} onPhotosChange={setPhotos} />
+          </div>
 
-        <div className="flex justify-end gap-4 pt-4 animate-fade-in">
-          <Button 
-            type="button" 
-            variant="outline" 
-            onClick={onCancel}
-            className="bg-[#1A1F35]/80 text-white border-[#2A2F45] hover:bg-[#2A2F45]
-                     backdrop-blur-sm transition-all duration-300"
-          >
-            Cancelar
-          </Button>
-          <Button 
-            type="submit"
-            className="bg-purple-600 hover:bg-purple-700 transition-all duration-300"
-          >
-            Salvar
-          </Button>
+          <div className="flex justify-end gap-4 pt-4">
+            <Button 
+              type="button" 
+              variant="outline" 
+              onClick={onCancel}
+              className="bg-white hover:bg-gray-50 text-gray-900 border-gray-200"
+            >
+              Cancelar
+            </Button>
+            <Button 
+              type="submit"
+              className="bg-purple-600 hover:bg-purple-700 text-white"
+            >
+              Salvar
+            </Button>
+          </div>
         </div>
-      </div>
+      </Card>
     </form>
   );
 };

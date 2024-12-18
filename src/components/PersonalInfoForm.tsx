@@ -13,9 +13,9 @@ interface PersonalInfoFormProps {
 
 export const PersonalInfoForm = ({ formData, onChange }: PersonalInfoFormProps) => {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 animate-fade-in">
-      <div className="space-y-2">
-        <label htmlFor="name" className="text-sm font-medium text-gray-200">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="space-y-2 md:col-span-2">
+        <label htmlFor="name" className="text-sm font-medium text-gray-700">
           Nome Completo *
         </label>
         <div className="relative">
@@ -25,56 +25,52 @@ export const PersonalInfoForm = ({ formData, onChange }: PersonalInfoFormProps) 
             name="name"
             value={formData.name}
             onChange={(e) => onChange("name", e.target.value)}
-            className="pl-10 bg-[#1A1F35]/80 text-white border-[#2A2F45] 
-                     focus:ring-2 focus:ring-purple-500 focus:border-transparent
-                     backdrop-blur-sm transition-all duration-300"
+            className="pl-10 bg-white/50 border-gray-200 focus:border-purple-500 
+                     h-12 text-lg rounded-xl"
             required
           />
         </div>
       </div>
+
       <div className="space-y-2">
-        <label htmlFor="motherName" className="text-sm font-medium text-gray-200">
-          Nome da Mãe *
+        <label htmlFor="motherName" className="text-sm font-medium text-gray-700">
+          Nome da Mãe
         </label>
         <Input
           id="motherName"
           name="motherName"
           value={formData.motherName}
           onChange={(e) => onChange("motherName", e.target.value)}
-          className="bg-[#1A1F35]/80 text-white border-[#2A2F45] 
-                   focus:ring-2 focus:ring-purple-500 focus:border-transparent
-                   backdrop-blur-sm transition-all duration-300"
-          required
+          className="bg-white/50 border-gray-200 focus:border-purple-500 
+                   h-12 text-lg rounded-xl"
         />
       </div>
+
       <div className="space-y-2">
-        <label htmlFor="rg" className="text-sm font-medium text-gray-200">
-          RG *
+        <label htmlFor="rg" className="text-sm font-medium text-gray-700">
+          RG
         </label>
         <Input
           id="rg"
           name="rg"
           value={formData.rg}
           onChange={(e) => onChange("rg", e.target.value)}
-          className="bg-[#1A1F35]/80 text-white border-[#2A2F45] 
-                   focus:ring-2 focus:ring-purple-500 focus:border-transparent
-                   backdrop-blur-sm transition-all duration-300"
-          required
+          className="bg-white/50 border-gray-200 focus:border-purple-500 
+                   h-12 text-lg rounded-xl"
         />
       </div>
+
       <div className="space-y-2">
-        <label htmlFor="cpf" className="text-sm font-medium text-gray-200">
-          CPF *
+        <label htmlFor="cpf" className="text-sm font-medium text-gray-700">
+          CPF
         </label>
         <Input
           id="cpf"
           name="cpf"
           value={formData.cpf}
           onChange={(e) => onChange("cpf", e.target.value)}
-          className="bg-[#1A1F35]/80 text-white border-[#2A2F45] 
-                   focus:ring-2 focus:ring-purple-500 focus:border-transparent
-                   backdrop-blur-sm transition-all duration-300"
-          required
+          className="bg-white/50 border-gray-200 focus:border-purple-500 
+                   h-12 text-lg rounded-xl"
         />
       </div>
     </div>

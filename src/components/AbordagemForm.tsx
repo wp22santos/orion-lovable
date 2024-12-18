@@ -5,7 +5,7 @@ import { LocationForm } from "./LocationForm";
 import { indexedDBService } from "@/services/indexedDB";
 import { useNavigate } from "react-router-dom";
 import { ApproachedPersonForm } from "./ApproachedPersonForm";
-import { Plus, MapPin, ArrowLeft } from "lucide-react";
+import { Plus } from "lucide-react";
 import { toast } from "sonner";
 
 interface Endereco {
@@ -125,32 +125,9 @@ export const AbordagemForm = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-gray-50">
-      {/* Header */}
-      <div className="sticky top-0 z-50 bg-white/80 backdrop-blur-sm border-b border-gray-100 shadow-sm">
-        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-          <button 
-            onClick={() => navigate(-1)}
-            className="flex items-center text-gray-600 hover:text-gray-900 transition-colors"
-          >
-            <ArrowLeft className="w-5 h-5 mr-2" />
-            Voltar
-          </button>
-          <h1 className="text-lg font-medium text-gray-900">Nova Abordagem</h1>
-          <div className="w-10" /> {/* Espaçador para centralizar o título */}
-        </div>
-      </div>
-
       <div className="container mx-auto px-4 py-6 space-y-6 max-w-3xl animate-fade-in">
         {/* Localização */}
-        <Card className="bg-white/80 backdrop-blur-sm border border-gray-100 p-6 shadow-lg rounded-2xl">
-          <div className="flex items-center gap-3 mb-6">
-            <MapPin className="w-6 h-6 text-purple-500" />
-            <h2 className="text-xl font-medium text-gray-900">
-              Localização da Abordagem
-            </h2>
-          </div>
-          <LocationForm formData={location} onChange={handleLocationChange} />
-        </Card>
+        <LocationForm formData={location} onChange={handleLocationChange} />
 
         {/* Pessoas Abordadas */}
         <Card className="bg-white/80 backdrop-blur-sm border border-gray-100 p-6 shadow-lg rounded-2xl">
