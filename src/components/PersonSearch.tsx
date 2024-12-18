@@ -68,7 +68,10 @@ export const PersonSearch = ({ onPersonFound }: PersonSearchProps) => {
                 profilePhoto: person.dados.profilePhoto,
                 endereco: person.endereco,
                 lastApproachDate: approach.date,
-                dados: person.dados
+                dados: {
+                  ...person.dados,
+                  profilePhoto: person.dados.profilePhoto
+                }
               });
             }
           });
