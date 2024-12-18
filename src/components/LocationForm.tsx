@@ -149,3 +149,4 @@ export const LocationForm = ({ formData, onChange }: LocationFormProps) => {
       </Button>
     </div>
   );
+};

@@ -1,21 +1,28 @@
-import { openDB } from 'idb';
+import { openDB, IDBPDatabase } from 'idb';
 
 const DB_NAME = 'police-app';
 const DB_VERSION = 1;
 const STORE_NAME = 'approaches';
 
+let dbInstance: IDBPDatabase | null = null;
+
 // Initialize the database
 const initDB = async () => {
-  const db = await openDB(DB_NAME, DB_VERSION, {
+  if (dbInstance) return dbInstance;
+
+  dbInstance = await openDB(DB_NAME, DB_VERSION, {
     upgrade(db) {
-      db.createObjectStore(STORE_NAME, { keyPath: 'id' });
+      if (!db.objectStoreNames.contains(STORE_NAME)) {
+        db.createObjectStore(STORE_NAME, { keyPath: 'id' });
+      }
     },
   });
-  return db;
+
+  return dbInstance;
 };
 
 // Function to add an approach
-export const addApproach = async (approach) => {
+export const addApproach = async (approach: any) => {
   const db = await initDB();
   await db.put(STORE_NAME, approach);
 };
@@ -27,19 +34,19 @@ export const getAllApproaches = async () => {
 };
 
 // Function to get an approach by ID
-export const getApproachById = async (id) => {
+export const getApproachById = async (id: string) => {
   const db = await initDB();
   return await db.get(STORE_NAME, id);
 };
 
 // Function to delete an approach
-export const deleteApproach = async (id) => {
+export const deleteApproach = async (id: string) => {
   const db = await initDB();
   await db.delete(STORE_NAME, id);
 };
 
 // Function to update an approach
-export const updateApproach = async (approach) => {
+export const updateApproach = async (approach: any) => {
   const db = await initDB();
   await db.put(STORE_NAME, approach);
 };
