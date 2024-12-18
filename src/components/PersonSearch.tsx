@@ -27,7 +27,6 @@ export const PersonSearch = ({ onPersonFound }: PersonSearchProps) => {
         console.log("Buscando pessoas com termo:", debouncedSearch);
         const approaches = await indexedDBService.getApproaches();
         
-        // Filtrar abordagens que contenham o termo de busca
         const foundApproaches = approaches.filter(approach => {
           const mainPersonMatch = approach.pessoas?.[0]?.dados?.nome
             ?.toLowerCase()
@@ -54,7 +53,10 @@ export const PersonSearch = ({ onPersonFound }: PersonSearchProps) => {
     searchPerson();
   }, [debouncedSearch, toast]);
 
-  const handleCardClick = (approach: any) => {
+  const handleCardClick = (approachId: string) => {
+    const approach = searchResults.find(a => a.id === approachId);
+    if (!approach) return;
+
     console.log("Selecionando pessoa da abordagem:", approach);
     const mainPerson = approach.pessoas[0];
     
@@ -93,22 +95,18 @@ export const PersonSearch = ({ onPersonFound }: PersonSearchProps) => {
       {searchResults.length > 0 && (
         <div className="grid gap-4 mt-4">
           {searchResults.map((approach) => (
-            <div 
-              key={approach.id} 
-              onClick={() => handleCardClick(approach)}
-              className="cursor-pointer"
-            >
-              <ApproachCard
-                approach={{
-                  id: approach.id,
-                  name: approach.pessoas[0]?.dados?.nome || "Nome não informado",
-                  date: approach.date,
-                  location: approach.location,
-                  companions: approach.companions,
-                  imageUrl: approach.pessoas[0]?.dados?.foto
-                }}
-              />
-            </div>
+            <ApproachCard
+              key={approach.id}
+              approach={{
+                id: approach.id,
+                name: approach.pessoas[0]?.dados?.nome || "Nome não informado",
+                date: approach.date,
+                location: approach.location,
+                companions: approach.companions,
+                imageUrl: approach.pessoas[0]?.dados?.foto
+              }}
+              onClick={handleCardClick}
+            />
           ))}
         </div>
       )}

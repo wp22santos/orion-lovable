@@ -12,7 +12,7 @@ interface ApproachCardProps {
     companions?: string[];
     imageUrl?: string;
   };
-  onClick: (id: string) => void;
+  onClick?: (id: string) => void;
 }
 
 export const ApproachCard = ({ approach, onClick }: ApproachCardProps) => {
@@ -24,10 +24,16 @@ export const ApproachCard = ({ approach, onClick }: ApproachCardProps) => {
     navigate(`/person/${approach.id}`);
   };
 
+  const handleCardClick = () => {
+    if (onClick) {
+      onClick(approach.id);
+    }
+  };
+
   return (
     <Card
       className="p-3 md:p-4 hover:shadow-lg transition-all duration-300 cursor-pointer animate-fade-in bg-white border-transparent hover:border-blue-200"
-      onClick={() => onClick(approach.id)}
+      onClick={handleCardClick}
     >
       <div className="flex gap-3 md:gap-4">
         <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 overflow-hidden shadow-md flex-shrink-0">
