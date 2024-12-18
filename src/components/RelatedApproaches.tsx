@@ -21,19 +21,28 @@ export const RelatedApproaches = ({ personId, currentApproachId }: RelatedApproa
         const approaches = await indexedDBService.getApproaches();
         console.log("Todas as abordagens:", approaches);
         
-        // Filtra abordagens onde a pessoa aparece em qualquer posição
-        const related = approaches.filter(approach => {
-          // Verifica se a pessoa está na lista de pessoas da abordagem
-          const isPresentInPessoas = approach.pessoas?.some(p => {
-            const matchById = p.id === personId;
-            const matchByName = approach.pessoas?.some(existingPerson => 
-              existingPerson.dados.nome.toLowerCase() === p.dados.nome.toLowerCase()
-            );
-            return matchById || matchByName;
-          });
+        // Primeiro, encontra os dados da pessoa atual
+        let targetPerson = null;
+        for (const approach of approaches) {
+          const person = approach.pessoas?.find(p => p.id === personId);
+          if (person) {
+            targetPerson = person;
+            break;
+          }
+        }
 
-          // Retorna true se a pessoa estiver presente e não for a abordagem atual
-          return isPresentInPessoas && approach.id !== currentApproachId;
+        if (!targetPerson) {
+          console.log("Pessoa não encontrada");
+          return;
+        }
+
+        // Filtra abordagens onde a pessoa aparece (por ID ou nome)
+        const related = approaches.filter(approach => {
+          // Verifica se a pessoa está em qualquer posição na lista de pessoas
+          return approach.pessoas?.some(p => 
+            p.id === personId || 
+            p.dados.nome.toLowerCase() === targetPerson?.dados.nome.toLowerCase()
+          ) && approach.id !== currentApproachId;
         });
 
         console.log("Abordagens relacionadas encontradas:", related);
@@ -48,19 +57,11 @@ export const RelatedApproaches = ({ personId, currentApproachId }: RelatedApproa
     loadRelatedApproaches();
   }, [personId, currentApproachId]);
 
-  const getCompanionNames = (approach: Approach, currentPersonId: string) => {
-    const companions: string[] = [];
-    
-    // Adiciona nomes das pessoas da abordagem, exceto a pessoa atual
-    if (approach.pessoas) {
-      approach.pessoas.forEach(person => {
-        if (person.id !== currentPersonId) {
-          companions.push(person.dados.nome);
-        }
-      });
-    }
-    
-    return companions.join(", ");
+  const getCompanionNames = (approach: Approach) => {
+    return approach.pessoas
+      ?.filter(p => p.id !== personId)
+      .map(p => p.dados.nome)
+      .join(", ") || "Nenhum acompanhante";
   };
 
   if (loading) {
@@ -89,10 +90,9 @@ export const RelatedApproaches = ({ personId, currentApproachId }: RelatedApproa
             onClick={() => navigate(`/approach/${approach.id}`)}
           >
             <div className="space-y-4">
-              {/* Fotos da abordagem */}
               {approach.pessoas && approach.pessoas.length > 0 && (
                 <div className="flex -space-x-2 overflow-hidden">
-                  {approach.pessoas.slice(0, 3).map((person, index) => (
+                  {approach.pessoas.slice(0, 3).map((person) => (
                     person.dados.foto ? (
                       <img
                         key={person.id}
@@ -126,7 +126,7 @@ export const RelatedApproaches = ({ personId, currentApproachId }: RelatedApproa
                   <div className="flex items-center gap-2">
                     <Users className="w-4 h-4" />
                     <p className="text-xs">
-                      Com: {getCompanionNames(approach, personId)}
+                      Com: {getCompanionNames(approach)}
                     </p>
                   </div>
                 </div>
