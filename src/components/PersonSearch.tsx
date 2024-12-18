@@ -26,16 +26,17 @@ export const PersonSearch = ({ onPersonFound }: PersonSearchProps) => {
       try {
         console.log("Buscando pessoas com termo:", debouncedSearch);
         const approaches = await indexedDBService.getApproaches();
+        console.log("Todas as abordagens:", approaches);
         
         const foundApproaches = approaches.filter(approach => {
-          const mainPersonMatch = approach.pessoas?.[0]?.dados?.nome
-            ?.toLowerCase()
-            .includes(debouncedSearch.toLowerCase());
-            
-          const rgMatch = approach.pessoas?.[0]?.dados?.rg === debouncedSearch;
-          const cpfMatch = approach.pessoas?.[0]?.dados?.cpf === debouncedSearch;
+          const mainPerson = approach.pessoas?.[0]?.dados;
+          if (!mainPerson) return false;
+
+          const nameMatch = mainPerson.nome?.toLowerCase().includes(debouncedSearch.toLowerCase());
+          const rgMatch = mainPerson.rg === debouncedSearch;
+          const cpfMatch = mainPerson.cpf === debouncedSearch;
           
-          return mainPersonMatch || rgMatch || cpfMatch;
+          return nameMatch || rgMatch || cpfMatch;
         });
 
         console.log("Abordagens encontradas:", foundApproaches);
@@ -58,16 +59,16 @@ export const PersonSearch = ({ onPersonFound }: PersonSearchProps) => {
     if (!approach) return;
 
     console.log("Selecionando pessoa da abordagem:", approach);
-    const mainPerson = approach.pessoas[0];
+    const mainPerson = approach.pessoas[0].dados;
     
     const personData = {
-      id: mainPerson.id,
-      name: mainPerson.dados.nome,
-      motherName: mainPerson.dados.nomeMae,
-      rg: mainPerson.dados.rg,
-      cpf: mainPerson.dados.cpf,
-      photos: mainPerson.dados.foto ? [mainPerson.dados.foto] : [],
-      endereco: mainPerson.endereco || {}
+      id: approach.pessoas[0].id,
+      name: mainPerson.nome,
+      motherName: mainPerson.nomeMae,
+      rg: mainPerson.rg,
+      cpf: mainPerson.cpf,
+      photos: mainPerson.foto ? [mainPerson.foto] : [],
+      endereco: approach.pessoas[0].endereco || {}
     };
 
     onPersonFound(personData);

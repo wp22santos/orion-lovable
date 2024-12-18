@@ -22,18 +22,13 @@ interface ApproachedPerson {
   rg: string;
   cpf: string;
   photos: string[];
+  endereco?: Endereco;
 }
 
 export const AbordagemForm = () => {
   const navigate = useNavigate();
   const [pessoas, setPessoas] = useState<ApproachedPerson[]>([]);
   const [showPersonForm, setShowPersonForm] = useState(false);
-  const [endereco, setEndereco] = useState<Endereco>({
-    rua: "",
-    numero: "",
-    bairro: "",
-    complemento: "",
-  });
   const [location, setLocation] = useState({
     address: "",
     latitude: 0,
@@ -71,12 +66,6 @@ export const AbordagemForm = () => {
         imageUrl: mainPerson.photos?.[0] || "",
         address: location.address,
         data: dataAtual,
-        endereco: {
-          rua: endereco.rua || "",
-          numero: endereco.numero || "",
-          bairro: endereco.bairro || "",
-          complemento: endereco.complemento || "",
-        },
         latitude: location.latitude || 0,
         longitude: location.longitude || 0,
         pessoas: pessoas.map(p => ({
@@ -91,11 +80,11 @@ export const AbordagemForm = () => {
             nomePai: "",
             endereco: location.address,
           },
-          endereco: {
-            rua: endereco.rua || "",
-            numero: endereco.numero || "",
-            bairro: endereco.bairro || "",
-            complemento: endereco.complemento || "",
+          endereco: p.endereco || {
+            rua: "",
+            numero: "",
+            bairro: "",
+            complemento: "",
           },
           veiculo: {
             plate: "",
@@ -108,6 +97,7 @@ export const AbordagemForm = () => {
         companions: pessoas.slice(1).map(p => p.name),
       };
 
+      console.log("Salvando abordagem:", abordagem);
       await indexedDBService.addApproach(abordagem);
       toast.success("Abordagem salva com sucesso");
       navigate("/");
@@ -120,12 +110,10 @@ export const AbordagemForm = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100">
       <div className="container mx-auto px-4 py-6 space-y-6 max-w-3xl animate-fade-in">
-        {/* Localização */}
         <Card className="bg-white/80 backdrop-blur-sm border border-gray-200 p-6 shadow-lg rounded-xl">
           <LocationForm formData={location} onChange={handleLocationChange} />
         </Card>
 
-        {/* Pessoas Abordadas */}
         <Card className="bg-white/80 backdrop-blur-sm border border-gray-200 p-6 shadow-lg rounded-xl">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-xl font-medium text-police-dark">Pessoas Abordadas</h2>
@@ -173,7 +161,6 @@ export const AbordagemForm = () => {
           )}
         </Card>
 
-        {/* Botão Salvar */}
         <div className="fixed bottom-0 left-0 right-0 p-4 bg-white/80 backdrop-blur-md border-t border-gray-200">
           <div className="container mx-auto max-w-3xl">
             <Button
