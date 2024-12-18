@@ -10,16 +10,32 @@ interface PersonSearchProps {
   onPersonFound: (person: any) => void;
 }
 
+interface UniquePerson {
+  id: string;
+  nome: string;
+  rg: string;
+  cpf: string;
+  nomeMae: string;
+  foto: string;
+  endereco: {
+    rua: string;
+    numero: string;
+    bairro: string;
+    complemento: string;
+  };
+  lastApproachDate: string;
+}
+
 export const PersonSearch = ({ onPersonFound }: PersonSearchProps) => {
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState("");
-  const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [uniquePeople, setUniquePeople] = useState<UniquePerson[]>([]);
   const debouncedSearch = useDebounce(searchTerm, 300);
 
   useEffect(() => {
     const searchPerson = async () => {
       if (!debouncedSearch || debouncedSearch.length < 2) {
-        setSearchResults([]);
+        setUniquePeople([]);
         return;
       }
 
@@ -28,19 +44,43 @@ export const PersonSearch = ({ onPersonFound }: PersonSearchProps) => {
         const approaches = await indexedDBService.getApproaches();
         console.log("Todas as abordagens:", approaches);
         
-        const foundApproaches = approaches.filter(approach => {
-          const mainPerson = approach.pessoas?.[0]?.dados;
-          if (!mainPerson) return false;
-
-          const nameMatch = mainPerson.nome?.toLowerCase().includes(debouncedSearch.toLowerCase());
-          const rgMatch = mainPerson.rg === debouncedSearch;
-          const cpfMatch = mainPerson.cpf === debouncedSearch;
-          
-          return nameMatch || rgMatch || cpfMatch;
+        // Mapa para armazenar pessoas únicas usando nome como chave
+        const peopleMap = new Map<string, UniquePerson>();
+        
+        // Processa todas as abordagens para encontrar pessoas únicas
+        approaches.forEach(approach => {
+          approach.pessoas?.forEach(person => {
+            const personKey = person.dados.nome.toLowerCase();
+            const existingPerson = peopleMap.get(personKey);
+            
+            // Se a pessoa não existe no mapa ou a abordagem atual é mais recente
+            if (!existingPerson || new Date(approach.date) > new Date(existingPerson.lastApproachDate)) {
+              peopleMap.set(personKey, {
+                id: person.id,
+                nome: person.dados.nome,
+                rg: person.dados.rg,
+                cpf: person.dados.cpf,
+                nomeMae: person.dados.nomeMae,
+                foto: person.dados.foto,
+                endereco: person.endereco,
+                lastApproachDate: approach.date
+              });
+            }
+          });
+        });
+        
+        // Filtra pessoas baseado no termo de busca
+        const filteredPeople = Array.from(peopleMap.values()).filter(person => {
+          const searchLower = debouncedSearch.toLowerCase();
+          return (
+            person.nome.toLowerCase().includes(searchLower) ||
+            person.rg === debouncedSearch ||
+            person.cpf === debouncedSearch
+          );
         });
 
-        console.log("Abordagens encontradas:", foundApproaches);
-        setSearchResults(foundApproaches);
+        console.log("Pessoas únicas encontradas:", filteredPeople);
+        setUniquePeople(filteredPeople);
       } catch (error) {
         console.error("Erro ao buscar pessoa:", error);
         toast({
@@ -54,21 +94,15 @@ export const PersonSearch = ({ onPersonFound }: PersonSearchProps) => {
     searchPerson();
   }, [debouncedSearch, toast]);
 
-  const handleCardClick = (approachId: string) => {
-    const approach = searchResults.find(a => a.id === approachId);
-    if (!approach) return;
-
-    console.log("Selecionando pessoa da abordagem:", approach);
-    const mainPerson = approach.pessoas[0].dados;
-    
+  const handlePersonSelect = (person: UniquePerson) => {
     const personData = {
-      id: approach.pessoas[0].id,
-      name: mainPerson.nome,
-      motherName: mainPerson.nomeMae,
-      rg: mainPerson.rg,
-      cpf: mainPerson.cpf,
-      photos: mainPerson.foto ? [mainPerson.foto] : [],
-      endereco: approach.pessoas[0].endereco || {}
+      id: person.id,
+      name: person.nome,
+      motherName: person.nomeMae,
+      rg: person.rg,
+      cpf: person.cpf,
+      photos: person.foto ? [person.foto] : [],
+      endereco: person.endereco
     };
 
     onPersonFound(personData);
@@ -93,21 +127,34 @@ export const PersonSearch = ({ onPersonFound }: PersonSearchProps) => {
         />
       </div>
 
-      {searchResults.length > 0 && (
+      {uniquePeople.length > 0 && (
         <div className="grid gap-4 mt-4">
-          {searchResults.map((approach) => (
-            <ApproachCard
-              key={approach.id}
-              approach={{
-                id: approach.id,
-                name: approach.pessoas[0]?.dados?.nome || "Nome não informado",
-                date: approach.date,
-                location: approach.location,
-                companions: approach.companions,
-                imageUrl: approach.pessoas[0]?.dados?.foto
-              }}
-              onClick={handleCardClick}
-            />
+          {uniquePeople.map((person) => (
+            <div
+              key={person.id}
+              onClick={() => handlePersonSelect(person)}
+              className="cursor-pointer bg-white rounded-xl shadow-sm hover:shadow-md 
+                       transition-all duration-200 p-4 border border-gray-200"
+            >
+              <div className="flex items-center gap-4">
+                {person.foto ? (
+                  <img
+                    src={person.foto}
+                    alt={person.nome}
+                    className="w-12 h-12 rounded-full object-cover border-2 border-gray-200"
+                  />
+                ) : (
+                  <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center">
+                    <span className="text-gray-500 text-lg">{person.nome.charAt(0)}</span>
+                  </div>
+                )}
+                <div>
+                  <h3 className="font-medium text-gray-900">{person.nome}</h3>
+                  <p className="text-sm text-gray-500">RG: {person.rg}</p>
+                  <p className="text-sm text-gray-500">CPF: {person.cpf}</p>
+                </div>
+              </div>
+            </div>
           ))}
         </div>
       )}
