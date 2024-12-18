@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Search, Plus, Users } from "lucide-react";
+import { Search, Users } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { indexedDBService } from "@/services/indexedDB";
@@ -165,15 +165,6 @@ const Index = () => {
           </div>
         )}
       </div>
-
-      <button 
-        onClick={() => navigate('/nova-abordagem')}
-        className="fixed right-6 bottom-6 w-14 h-14 bg-gray-800 hover:bg-gray-700 
-                   rounded-full flex items-center justify-center shadow-lg 
-                   transition-transform hover:scale-105 active:scale-95 text-white"
-      >
-        <Plus size={24} />
-      </button>
     </div>
   );
 };

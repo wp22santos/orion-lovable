@@ -11,6 +11,7 @@ import ApproachDetails from "./pages/ApproachDetails";
 import PersonProfile from "./pages/PersonProfile";
 import NovaAbordagem from "./pages/NovaAbordagem";
 import EditPerson from "./pages/EditPerson";
+import Menu from "./pages/Menu";
 
 const queryClient = new QueryClient();
 
@@ -66,6 +67,14 @@ const AppRoutes = () => {
           element={
             <ProtectedRoute>
               <NovaAbordagem />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/menu"
+          element={
+            <ProtectedRoute>
+              <Menu />
             </ProtectedRoute>
           }
         />
