@@ -6,7 +6,7 @@ import { LocationForm } from "./LocationForm";
 import { indexedDBService } from "@/services/indexedDB";
 import { useNavigate } from "react-router-dom";
 import { ApproachedPersonForm } from "./ApproachedPersonForm";
-import { Plus } from "lucide-react";
+import { Plus, MapPin } from "lucide-react";
 import { toast } from "sonner";
 
 interface Endereco {
@@ -125,20 +125,23 @@ export const AbordagemForm = () => {
   };
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-6 space-y-6">
-      <Card className="bg-white border border-gray-200 p-6 shadow-sm">
-        <h2 className="text-gray-900 text-lg font-medium mb-4">
-          Localização da Abordagem
-        </h2>
+    <div className="max-w-3xl mx-auto px-4 py-6 space-y-6 animate-fade-in">
+      <Card className="bg-white/80 backdrop-blur-sm border border-gray-100 p-6 shadow-sm rounded-xl">
+        <div className="flex items-center gap-2 mb-4">
+          <MapPin className="w-5 h-5 text-purple-500" />
+          <h2 className="text-gray-900 text-lg font-medium">
+            Localização da Abordagem
+          </h2>
+        </div>
         <LocationForm formData={location} onChange={handleLocationChange} />
       </Card>
 
-      <Card className="bg-white border border-gray-200 p-6 shadow-sm">
+      <Card className="bg-white/80 backdrop-blur-sm border border-gray-100 p-6 shadow-sm rounded-xl">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-gray-900 text-lg font-medium">Pessoas Abordadas</h2>
           <Button
             onClick={() => setShowPersonForm(true)}
-            className="bg-blue-600 hover:bg-blue-700 text-white"
+            className="bg-purple-600 hover:bg-purple-700 text-white shadow-purple-200/50 shadow-lg"
           >
             <Plus className="w-4 h-4 mr-2" />
             Adicionar Pessoa
@@ -155,13 +158,13 @@ export const AbordagemForm = () => {
         {pessoas.length > 0 && (
           <div className="space-y-4 mt-4">
             {pessoas.map((person) => (
-              <Card key={person.id} className="bg-gray-50 p-4">
+              <Card key={person.id} className="bg-gray-50/80 backdrop-blur-sm p-4 hover:bg-gray-50/90 transition-all duration-200">
                 <div className="flex items-center space-x-4">
                   {person.photos?.[0] && (
                     <img
                       src={person.photos[0]}
                       alt="Foto do abordado"
-                      className="w-16 h-16 rounded-full object-cover"
+                      className="w-16 h-16 rounded-full object-cover ring-2 ring-purple-100"
                     />
                   )}
                   <div>
@@ -179,7 +182,7 @@ export const AbordagemForm = () => {
       <div className="flex justify-end">
         <Button
           onClick={handleSave}
-          className="bg-green-600 hover:bg-green-700 text-white px-6"
+          className="bg-green-600 hover:bg-green-700 text-white px-6 shadow-green-200/50 shadow-lg"
         >
           Salvar Abordagem
         </Button>

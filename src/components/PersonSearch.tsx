@@ -50,7 +50,7 @@ export const PersonSearch = ({ onPersonFound }: PersonSearchProps) => {
           placeholder="Buscar por nome, RG ou CPF..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="pl-10 bg-[#1A1F35]/80 text-white border-[#2A2F45] backdrop-blur-sm 
+          className="pl-10 bg-white/80 text-gray-900 border-gray-200 
                    focus:ring-2 focus:ring-purple-500 focus:border-transparent
                    transition-all duration-300"
         />
