@@ -107,7 +107,7 @@ export const PersonSearch = ({ onPersonFound }: PersonSearchProps) => {
       motherName: person.nomeMae,
       rg: person.rg,
       cpf: person.cpf,
-      photos: [], // Não trazemos fotos anteriores
+      photos: [],
       endereco: person.endereco,
       profilePhoto: person.profilePhoto
     };
