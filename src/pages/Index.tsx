@@ -43,13 +43,14 @@ const Index = () => {
     location: approach.location,
     imageUrl: approach.pessoas[0]?.dados.foto,
     companions: approach.pessoas.slice(1).map(p => p.dados.nome),
-    // Adding required properties to match Approach type
     motherName: approach.pessoas[0]?.dados.nomeMae || "",
     rg: approach.pessoas[0]?.dados.rg || "",
     cpf: approach.pessoas[0]?.dados.cpf || "",
     address: approach.endereco?.rua || "",
     data: approach.data || "",
     endereco: approach.endereco,
+    latitude: approach.latitude || 0,
+    longitude: approach.longitude || 0,
     pessoas: approach.pessoas
   }));
 
