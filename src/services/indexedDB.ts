@@ -7,27 +7,40 @@ export interface ApproachedPerson {
   photos: string[];
 }
 
+export interface Endereco {
+  rua: string;
+  numero: string;
+  bairro: string;
+  complemento: string;
+}
+
+export interface VehicleInfo {
+  plate: string;
+  brand: string;
+  color: string;
+  observations: string;
+}
+
 export interface Approach {
   id: string;
-  name: string;
-  motherName: string;
-  rg: string;
-  cpf: string;
-  address: string;
-  observations?: string;
-  companions?: string[];
-  approachedPeople?: ApproachedPerson[];
-  date: string;
-  location: string;
-  imageUrl?: string;
-  latitude?: number;
-  longitude?: number;
-  vehicle?: {
-    type: string;
-    model: string;
-    plate: string;
-    observations?: string;
-  };
+  data: string;
+  endereco: Endereco;
+  pessoas: {
+    id: string;
+    dados: {
+      foto: string;
+      nome: string;
+      dataNascimento: string;
+      rg: string;
+      cpf: string;
+      nomeMae: string;
+      nomePai: string;
+      endereco?: string;
+    };
+    endereco: Endereco;
+    veiculo: VehicleInfo;
+    observacoes: string;
+  }[];
 }
 
 class IndexedDBService {
@@ -132,7 +145,10 @@ class IndexedDBService {
         ${approach.motherName} 
         ${approach.rg} 
         ${approach.cpf} 
-        ${approach.address} 
+        ${approach.endereco.rua} 
+        ${approach.endereco.numero} 
+        ${approach.endereco.bairro} 
+        ${approach.endereco.complemento} 
         ${approach.observations || ''} 
         ${approach.companions?.join(' ') || ''}
       `.toLowerCase();

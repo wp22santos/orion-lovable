@@ -32,9 +32,9 @@ export const ApproachForm = ({ isOpen, onClose, onSubmit }: ApproachFormProps) =
     companions: "",
     imageUrl: "",
     vehicle: {
-      type: "",
-      model: "",
       plate: "",
+      brand: "",
+      color: "",
       observations: "",
     } as VehicleInfo,
   });
