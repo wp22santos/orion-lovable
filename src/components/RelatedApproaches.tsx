@@ -21,15 +21,19 @@ export const RelatedApproaches = ({ personId, currentApproachId }: RelatedApproa
         const approaches = await indexedDBService.getApproaches();
         console.log("Todas as abordagens:", approaches);
         
-        // Filtra abordagens onde a pessoa aparece como alvo principal ou acompanhante
+        // Filtra abordagens onde a pessoa aparece em qualquer posição
         const related = approaches.filter(approach => {
           // Verifica se a pessoa está na lista de pessoas da abordagem
-          const isPrincipal = approach.pessoas?.some(p => p.id === personId);
-          // Verifica se a pessoa está na lista de acompanhantes
-          const isCompanion = approach.companions?.includes(personId);
-          
-          // Retorna true se a pessoa for principal ou acompanhante, exceto para a abordagem atual
-          return (isPrincipal || isCompanion) && approach.id !== currentApproachId;
+          const isPresentInPessoas = approach.pessoas?.some(p => {
+            const matchById = p.id === personId;
+            const matchByName = approach.pessoas?.some(existingPerson => 
+              existingPerson.dados.nome.toLowerCase() === p.dados.nome.toLowerCase()
+            );
+            return matchById || matchByName;
+          });
+
+          // Retorna true se a pessoa estiver presente e não for a abordagem atual
+          return isPresentInPessoas && approach.id !== currentApproachId;
         });
 
         console.log("Abordagens relacionadas encontradas:", related);
@@ -113,7 +117,7 @@ export const RelatedApproaches = ({ personId, currentApproachId }: RelatedApproa
                 <div className="text-sm text-gray-600 space-y-1">
                   <div className="flex items-center gap-2">
                     <CalendarDays className="w-4 h-4" />
-                    <p>{approach.date}</p>
+                    <p>{new Date(approach.date).toLocaleDateString()}</p>
                   </div>
                   <div className="flex items-center gap-2">
                     <MapPin className="w-4 h-4" />
