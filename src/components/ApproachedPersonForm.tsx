@@ -7,7 +7,6 @@ import { useToast } from "@/hooks/use-toast";
 import { Card } from "@/components/ui/card";
 import { X } from "lucide-react";
 import { Input } from "./ui/input";
-import { Form } from "@/components/ui/form";
 
 interface ApproachedPerson {
   id: string;
@@ -16,6 +15,7 @@ interface ApproachedPerson {
   rg: string;
   cpf: string;
   photos: string[];
+  profilePhoto?: string | null;
   endereco?: {
     rua: string;
     numero: string;
@@ -33,7 +33,7 @@ interface ApproachedPersonFormProps {
 export const ApproachedPersonForm = ({ onSave, onCancel, existingPerson }: ApproachedPersonFormProps) => {
   const { toast } = useToast();
   const [photos, setPhotos] = useState<string[]>(existingPerson?.photos || []);
-  const [profilePhoto, setProfilePhoto] = useState<string | null>(null);
+  const [profilePhoto, setProfilePhoto] = useState<string | null>(existingPerson?.profilePhoto || null);
   const [formData, setFormData] = useState({
     name: existingPerson?.name || "",
     motherName: existingPerson?.motherName || "",
@@ -89,13 +89,13 @@ export const ApproachedPersonForm = ({ onSave, onCancel, existingPerson }: Appro
       ...formData,
       photos,
       endereco,
-      profilePhoto: profilePhoto
+      profilePhoto
     });
   };
 
   return (
-    <Form onSubmit={handleSubmit}>
-      <div className="space-y-6 animate-fade-in">
+    <div className="space-y-6 animate-fade-in">
+      <form onSubmit={handleSubmit}>
         <Card className="bg-white/80 backdrop-blur-sm border border-gray-200 p-6 rounded-xl">
           <div className="flex justify-between items-center mb-6">
             <h3 className="text-xl font-medium text-police-dark">Dados do Abordado</h3>
@@ -181,7 +181,7 @@ export const ApproachedPersonForm = ({ onSave, onCancel, existingPerson }: Appro
             </div>
           </div>
         </Card>
-      </div>
-    </Form>
+      </form>
+    </div>
   );
 };
