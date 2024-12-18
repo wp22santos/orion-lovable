@@ -23,29 +23,41 @@ export const LocationForm = ({ formData, onChange }: LocationFormProps) => {
     neighborhood: "",
   });
 
-  // Solicita localização ao montar o componente
+  // Solicita permissão de GPS ao montar o componente
   useEffect(() => {
-    const requestLocationOnMount = async () => {
+    const requestLocationPermission = async () => {
       try {
-        if ('permissions' in navigator) {
-          const permission = await navigator.permissions.query({ name: 'geolocation' });
-          
-          if (permission.state === 'granted') {
-            handleGetLocation();
-          } else if (permission.state === 'prompt') {
-            toast.info('Por favor, permita o acesso à sua localização para melhor precisão.');
-          }
+        const result = await navigator.permissions.query({ name: 'geolocation' });
+        
+        if (result.state === 'granted') {
+          handleGetLocation();
+        } else if (result.state === 'prompt') {
+          // Força a solicitação de permissão
+          navigator.geolocation.getCurrentPosition(
+            () => {
+              handleGetLocation();
+              toast.success('Permissão de localização concedida!');
+            },
+            (error) => {
+              console.error('Erro ao obter permissão:', error);
+              toast.error('Por favor, permita o acesso à sua localização para continuar.');
+            },
+            { enableHighAccuracy: true }
+          );
+        } else {
+          toast.error('Permissão de localização negada. Por favor, habilite nas configurações do seu dispositivo.');
         }
       } catch (error) {
-        console.error("Erro ao verificar permissão:", error);
+        console.error('Erro ao verificar permissão:', error);
+        toast.error('Erro ao verificar permissões de localização');
       }
     };
 
-    requestLocationOnMount();
+    requestLocationPermission();
   }, []);
 
   const handleGetLocation = async () => {
-    if (isLoadingLocation) return; // Evita múltiplas chamadas
+    if (isLoadingLocation) return;
 
     try {
       setIsLoadingLocation(true);
@@ -55,7 +67,6 @@ export const LocationForm = ({ formData, onChange }: LocationFormProps) => {
         onChange("latitude", location.latitude);
         onChange("longitude", location.longitude);
         
-        // Usa OpenStreetMap para reverse geocoding
         const response = await fetch(
           `https://nominatim.openstreetmap.org/reverse?format=json&lat=${location.latitude}&lon=${location.longitude}`
         );
@@ -96,7 +107,6 @@ export const LocationForm = ({ formData, onChange }: LocationFormProps) => {
       [field]: value,
     }));
     
-    // Atualiza o endereço completo apenas quando todos os campos necessários estiverem preenchidos
     const { street, number, neighborhood } = addressDetails;
     if (street || number || neighborhood) {
       const fullAddress = `${street}, ${number} - ${neighborhood}`.trim();

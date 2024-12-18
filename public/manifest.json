@@ -2,7 +2,7 @@
   "name": "Sistema de Abordagem Policial",
   "short_name": "Abordagem",
   "description": "Sistema para registro e controle de abordagens policiais",
-  "start_url": "/",
+  "start_url": "./",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#1a1f35",
@@ -28,5 +28,9 @@
   "orientation": "portrait",
   "categories": ["utilities", "security"],
   "prefer_related_applications": false,
-  "scope": "/"
+  "scope": "./",
+  "permissions": [
+    "geolocation",
+    "storage"
+  ]
 }
