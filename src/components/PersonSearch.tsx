@@ -4,7 +4,6 @@ import { useDebounce } from "@/hooks/useDebounce";
 import { useEffect, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { indexedDBService } from "@/services/indexedDB";
-import { ApproachCard } from "./ApproachCard";
 
 interface PersonSearchProps {
   onPersonFound: (person: any) => void;
@@ -16,7 +15,7 @@ interface UniquePerson {
   rg: string;
   cpf: string;
   nomeMae: string;
-  foto: string;
+  profilePhoto?: string;
   endereco: {
     rua: string;
     numero: string;
@@ -40,20 +39,14 @@ export const PersonSearch = ({ onPersonFound }: PersonSearchProps) => {
       }
 
       try {
-        console.log("Buscando pessoas com termo:", debouncedSearch);
         const approaches = await indexedDBService.getApproaches();
-        console.log("Todas as abordagens:", approaches);
-        
-        // Mapa para armazenar pessoas únicas usando nome como chave
         const peopleMap = new Map<string, UniquePerson>();
         
-        // Processa todas as abordagens para encontrar pessoas únicas
         approaches.forEach(approach => {
           approach.pessoas?.forEach(person => {
             const personKey = person.dados.nome.toLowerCase();
             const existingPerson = peopleMap.get(personKey);
             
-            // Se a pessoa não existe no mapa ou a abordagem atual é mais recente
             if (!existingPerson || new Date(approach.date) > new Date(existingPerson.lastApproachDate)) {
               peopleMap.set(personKey, {
                 id: person.id,
@@ -61,7 +54,7 @@ export const PersonSearch = ({ onPersonFound }: PersonSearchProps) => {
                 rg: person.dados.rg,
                 cpf: person.dados.cpf,
                 nomeMae: person.dados.nomeMae,
-                foto: person.dados.foto,
+                profilePhoto: person.dados.profilePhoto,
                 endereco: person.endereco,
                 lastApproachDate: approach.date
               });
@@ -69,7 +62,6 @@ export const PersonSearch = ({ onPersonFound }: PersonSearchProps) => {
           });
         });
         
-        // Filtra pessoas baseado no termo de busca
         const filteredPeople = Array.from(peopleMap.values()).filter(person => {
           const searchLower = debouncedSearch.toLowerCase();
           return (
@@ -79,7 +71,6 @@ export const PersonSearch = ({ onPersonFound }: PersonSearchProps) => {
           );
         });
 
-        console.log("Pessoas únicas encontradas:", filteredPeople);
         setUniquePeople(filteredPeople);
       } catch (error) {
         console.error("Erro ao buscar pessoa:", error);
@@ -101,8 +92,9 @@ export const PersonSearch = ({ onPersonFound }: PersonSearchProps) => {
       motherName: person.nomeMae,
       rg: person.rg,
       cpf: person.cpf,
-      photos: person.foto ? [person.foto] : [],
-      endereco: person.endereco
+      photos: [], // Não trazemos fotos anteriores
+      endereco: person.endereco,
+      profilePhoto: person.profilePhoto
     };
 
     onPersonFound(personData);
@@ -137,9 +129,9 @@ export const PersonSearch = ({ onPersonFound }: PersonSearchProps) => {
                        transition-all duration-200 p-4 border border-gray-200"
             >
               <div className="flex items-center gap-4">
-                {person.foto ? (
+                {person.profilePhoto ? (
                   <img
-                    src={person.foto}
+                    src={person.profilePhoto}
                     alt={person.nome}
                     className="w-12 h-12 rounded-full object-cover border-2 border-gray-200"
                   />

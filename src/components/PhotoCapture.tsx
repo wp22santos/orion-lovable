@@ -1,14 +1,17 @@
-import { Camera } from "lucide-react";
+import { Camera, User } from "lucide-react";
 import { Button } from "./ui/button";
 import { useToast } from "@/hooks/use-toast";
+import { useState } from "react";
 
 interface PhotoCaptureProps {
   photos: string[];
   onPhotosChange: (photos: string[]) => void;
+  onProfilePhotoChange?: (photoUrl: string) => void;
 }
 
-export const PhotoCapture = ({ photos, onPhotosChange }: PhotoCaptureProps) => {
+export const PhotoCapture = ({ photos, onPhotosChange, onProfilePhotoChange }: PhotoCaptureProps) => {
   const { toast } = useToast();
+  const [selectedProfilePhoto, setSelectedProfilePhoto] = useState<string | null>(null);
 
   const handlePhotoCapture = async () => {
     try {
@@ -54,6 +57,17 @@ export const PhotoCapture = ({ photos, onPhotosChange }: PhotoCaptureProps) => {
     }
   };
 
+  const handleSetProfilePhoto = (photoUrl: string) => {
+    setSelectedProfilePhoto(photoUrl);
+    if (onProfilePhotoChange) {
+      onProfilePhotoChange(photoUrl);
+    }
+    toast({
+      title: "Foto de perfil definida",
+      description: "A foto foi definida como foto de perfil.",
+    });
+  };
+
   return (
     <div className="space-y-4 animate-fade-in">
       <Button
@@ -70,13 +84,24 @@ export const PhotoCapture = ({ photos, onPhotosChange }: PhotoCaptureProps) => {
       {photos.length > 0 && (
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
           {photos.map((photo, index) => (
-            <div key={index} className="relative aspect-square rounded-lg overflow-hidden 
-                                      hover:scale-105 transition-transform duration-300">
+            <div key={index} className="relative group">
               <img
                 src={photo}
                 alt={`Foto ${index + 1}`}
-                className="w-full h-full object-cover"
+                className={`aspect-square object-cover rounded-lg transition-all duration-300 
+                          ${selectedProfilePhoto === photo ? 'ring-2 ring-blue-500' : ''}`}
               />
+              <Button
+                type="button"
+                variant="secondary"
+                size="sm"
+                onClick={() => handleSetProfilePhoto(photo)}
+                className="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 
+                         transition-opacity duration-300 bg-white/90 hover:bg-white"
+              >
+                <User className="w-4 h-4 mr-1" />
+                {selectedProfilePhoto === photo ? 'Foto de Perfil' : 'Definir como Perfil'}
+              </Button>
             </div>
           ))}
         </div>

@@ -32,6 +32,7 @@ interface ApproachedPersonFormProps {
 export const ApproachedPersonForm = ({ onSave, onCancel, existingPerson }: ApproachedPersonFormProps) => {
   const { toast } = useToast();
   const [photos, setPhotos] = useState<string[]>(existingPerson?.photos || []);
+  const [profilePhoto, setProfilePhoto] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     name: existingPerson?.name || "",
     motherName: existingPerson?.motherName || "",
@@ -62,12 +63,13 @@ export const ApproachedPersonForm = ({ onSave, onCancel, existingPerson }: Appro
       cpf: person.cpf,
     });
     
-    if (person.photos?.length > 0) {
-      setPhotos(person.photos);
-    }
-
     if (person.endereco) {
       setEndereco(person.endereco);
+    }
+
+    // Mantemos o profilePhoto existente
+    if (person.profilePhoto) {
+      setProfilePhoto(person.profilePhoto);
     }
   };
 
@@ -87,6 +89,7 @@ export const ApproachedPersonForm = ({ onSave, onCancel, existingPerson }: Appro
       ...formData,
       photos,
       endereco,
+      profilePhoto: profilePhoto
     });
   };
 
@@ -108,10 +111,10 @@ export const ApproachedPersonForm = ({ onSave, onCancel, existingPerson }: Appro
         
         <div className="space-y-6">
           <PersonSearch onPersonFound={handlePersonFound} />
+        
+        <div className="space-y-6">
+          <PersonalInfoForm formData={formData} onChange={handleChange} />
           
-          <div className="space-y-6">
-            <PersonalInfoForm formData={formData} onChange={handleChange} />
-            
             <div className="space-y-4">
               <h4 className="font-medium text-gray-700">Endereço</h4>
               <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
@@ -150,21 +153,14 @@ export const ApproachedPersonForm = ({ onSave, onCancel, existingPerson }: Appro
               </div>
             </div>
 
-            <div className="space-y-4">
-              <PhotoCapture photos={photos} onPhotosChange={setPhotos} />
-              {photos.length === 0 && (
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="w-full bg-white hover:bg-gray-50 border-gray-200 h-12"
-                  onClick={() => document.getElementById('photo-input')?.click()}
-                >
-                  <Camera className="mr-2 h-5 w-5" />
-                  Capturar Foto
-                </Button>
-              )}
-            </div>
+          <div className="space-y-4">
+            <PhotoCapture 
+              photos={photos} 
+              onPhotosChange={setPhotos}
+              onProfilePhotoChange={setProfilePhoto}
+            />
           </div>
+        </div>
 
           <div className="flex gap-4 pt-4 border-t border-gray-200">
             <Button 
@@ -182,7 +178,6 @@ export const ApproachedPersonForm = ({ onSave, onCancel, existingPerson }: Appro
               Adicionar
             </Button>
           </div>
-        </div>
       </Card>
     </form>
   );
