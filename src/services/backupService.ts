@@ -1,3 +1,20 @@
+interface FileSystemFileHandle {
+  createWritable(): Promise<FileSystemWritableFileStream>;
+  getFile(): Promise<File>;
+}
+
+interface FileSystemWritableFileStream {
+  write(data: any): Promise<void>;
+  close(): Promise<void>;
+}
+
+declare global {
+  interface Window {
+    showSaveFilePicker(options?: any): Promise<FileSystemFileHandle>;
+    showOpenFilePicker(options?: any): Promise<FileSystemFileHandle[]>;
+  }
+}
+
 export const backupService = {
   async saveBackup(data: any) {
     try {

@@ -1,3 +1,5 @@
+import { backupService } from './backupService';
+
 export interface ApproachedPerson {
   id: string;
   name: string;
