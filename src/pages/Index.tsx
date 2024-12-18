@@ -46,10 +46,15 @@ const Index = () => {
     }
   });
 
-  // Transformar abordagens em lista única de pessoas
+  // Transformar abordagens em lista única de pessoas (sem duplicatas)
   const people = approaches.reduce<Person[]>((acc, approach) => {
+    // Adiciona todas as pessoas da abordagem (principais e acompanhantes)
     approach.pessoas?.forEach(person => {
-      const existingPerson = acc.find(p => p.id === person.id);
+      // Verifica se a pessoa já existe no acumulador
+      const existingPerson = acc.find(p => 
+        // Compara por ID e também pelo nome para casos onde o mesmo nome aparece em diferentes abordagens
+        p.id === person.id || p.dados.nome.toLowerCase() === person.dados.nome.toLowerCase()
+      );
       
       if (!existingPerson) {
         acc.push({
@@ -59,6 +64,7 @@ const Index = () => {
         });
       }
     });
+    
     return acc;
   }, []);
 
