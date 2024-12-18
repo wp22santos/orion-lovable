@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { ApproachedPersonForm } from "@/components/ApproachedPersonForm";
 import { indexedDBService } from "@/services/indexedDB";
 import { toast } from "sonner";
-import { Person } from "@/types/person";
+import { Person, Photo } from "@/types/person";
 
 const EditPerson = () => {
   const { id } = useParams();
@@ -30,7 +30,7 @@ const EditPerson = () => {
                 motherName: foundPerson.dados.nomeMae,
                 rg: foundPerson.dados.rg,
                 cpf: foundPerson.dados.cpf,
-                profilePhoto: foundPerson.dados.profilePhoto,
+                photos: foundPerson.dados.fotos || [],
                 endereco: foundPerson.endereco
               });
               break;
@@ -71,8 +71,8 @@ const EditPerson = () => {
                 nomeMae: updatedPerson.motherName,
                 rg: updatedPerson.rg,
                 cpf: updatedPerson.cpf,
-                fotos: updatedPerson.photos,
-                profilePhoto: updatedPerson.photos.find((p: Photo) => p.isPerfil)?.url
+                foto: updatedPerson.photos.find((p: Photo) => p.isPerfil)?.url || '',
+                fotos: updatedPerson.photos
               },
               endereco: updatedPerson.endereco
             };

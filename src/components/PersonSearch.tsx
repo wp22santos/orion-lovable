@@ -12,10 +12,7 @@ interface PersonSearchProps {
 
 interface UniquePerson extends Person {
   lastApproachDate: string;
-  dados: PersonData & {
-    fotos: Photo[];
-    profilePhoto?: string;
-  };
+  dados: PersonData;
 }
 
 export const PersonSearch = ({ onPersonFound }: PersonSearchProps) => {
@@ -47,7 +44,6 @@ export const PersonSearch = ({ onPersonFound }: PersonSearchProps) => {
                 dados: {
                   ...person.dados,
                   fotos: person.dados.fotos || [],
-                  profilePhoto: person.dados.profilePhoto
                 }
               });
             }
@@ -78,15 +74,15 @@ export const PersonSearch = ({ onPersonFound }: PersonSearchProps) => {
   }, [debouncedSearch, toast]);
 
   const handlePersonSelect = (person: UniquePerson) => {
+    const profilePhoto = person.dados.fotos?.find((p: Photo) => p.isPerfil)?.url;
     const personData = {
       id: person.id,
       name: person.dados.nome,
       motherName: person.dados.nomeMae,
       rg: person.dados.rg,
       cpf: person.dados.cpf,
-      photos: [],
+      photos: person.dados.fotos || [],
       endereco: person.endereco,
-      profilePhoto: person.dados.profilePhoto
     };
 
     onPersonFound(personData);
@@ -121,9 +117,9 @@ export const PersonSearch = ({ onPersonFound }: PersonSearchProps) => {
                        transition-all duration-200 p-4 border border-gray-200"
             >
               <div className="flex items-center gap-4">
-                {person.dados.profilePhoto ? (
+                {person.dados.fotos?.find(p => p.isPerfil)?.url ? (
                   <img
-                    src={person.dados.profilePhoto}
+                    src={person.dados.fotos.find(p => p.isPerfil)?.url}
                     alt={person.dados.nome}
                     className="w-12 h-12 rounded-full object-cover border-2 border-gray-200"
                   />
