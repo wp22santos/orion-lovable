@@ -29,7 +29,7 @@ const EditPerson = () => {
                 rg: foundPerson.dados.rg,
                 cpf: foundPerson.dados.cpf,
                 photos: foundPerson.dados.photos || [],
-                profilePhoto: foundPerson.dados.profilePhoto,
+                profilePhoto: foundPerson.dados.profilePhoto || null,
                 endereco: foundPerson.endereco
               });
               break;
