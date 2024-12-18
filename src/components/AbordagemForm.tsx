@@ -7,6 +7,7 @@ import { indexedDBService } from "@/services/indexedDB";
 import { useNavigate } from "react-router-dom";
 import { ApproachedPersonForm } from "./ApproachedPersonForm";
 import { Plus } from "lucide-react";
+import { toast } from "sonner";
 
 interface Endereco {
   rua: string;
@@ -25,7 +26,6 @@ interface ApproachedPerson {
 }
 
 export const AbordagemForm = () => {
-  const { toast } = useToast();
   const navigate = useNavigate();
   const [pessoas, setPessoas] = useState<ApproachedPerson[]>([]);
   const [showPersonForm, setShowPersonForm] = useState(false);
@@ -48,10 +48,7 @@ export const AbordagemForm = () => {
   const handleAddPerson = (person: ApproachedPerson) => {
     setPessoas(prev => [...prev, person]);
     setShowPersonForm(false);
-    toast({
-      title: "Sucesso",
-      description: "Pessoa adicionada com sucesso.",
-    });
+    toast.success("Pessoa adicionada com sucesso.");
   };
 
   const handleSave = async () => {
@@ -59,11 +56,7 @@ export const AbordagemForm = () => {
       console.log("Iniciando salvamento da abordagem...");
       
       if (pessoas.length === 0) {
-        toast({
-          title: "Erro",
-          description: "Adicione pelo menos uma pessoa à abordagem.",
-          variant: "destructive",
-        });
+        toast.error("Adicione pelo menos uma pessoa à abordagem.");
         return;
       }
 
@@ -73,7 +66,12 @@ export const AbordagemForm = () => {
       const abordagem = {
         id: crypto.randomUUID(),
         date: dataAtual,
-        location: location.address,
+        location: location.address || "Localização não informada",
+        name: mainPerson.name,
+        motherName: mainPerson.motherName,
+        rg: mainPerson.rg,
+        cpf: mainPerson.cpf,
+        imageUrl: mainPerson.photos?.[0] || "",
         address: location.address,
         data: dataAtual,
         endereco: {
@@ -84,10 +82,6 @@ export const AbordagemForm = () => {
         },
         latitude: location.latitude || 0,
         longitude: location.longitude || 0,
-        name: mainPerson.name,
-        motherName: mainPerson.motherName,
-        rg: mainPerson.rg,
-        cpf: mainPerson.cpf,
         pessoas: pessoas.map(p => ({
           id: p.id,
           dados: {
@@ -114,6 +108,7 @@ export const AbordagemForm = () => {
           },
           observacoes: "",
         })),
+        companions: pessoas.slice(1).map(p => p.name),
       };
 
       console.log("Dados da abordagem preparados:", abordagem);
@@ -121,19 +116,11 @@ export const AbordagemForm = () => {
       await indexedDBService.addApproach(abordagem);
       console.log("Abordagem salva com sucesso no IndexedDB");
       
-      toast({
-        title: "Sucesso",
-        description: "Abordagem salva com sucesso.",
-      });
-      
+      toast.success("Abordagem salva com sucesso.");
       navigate("/");
     } catch (error) {
       console.error("Erro ao salvar abordagem:", error);
-      toast({
-        title: "Erro",
-        description: "Erro ao salvar a abordagem.",
-        variant: "destructive",
-      });
+      toast.error("Erro ao salvar a abordagem.");
     }
   };
 
