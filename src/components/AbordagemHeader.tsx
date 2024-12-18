@@ -6,12 +6,12 @@ export const AbordagemHeader = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="bg-gradient-to-r from-purple-500/90 to-blue-500/90 backdrop-blur-sm fixed top-0 left-0 right-0 z-50">
+    <div className="bg-police-dark/95 backdrop-blur-sm fixed top-0 left-0 right-0 z-50 border-b border-gray-800">
       <div className="max-w-3xl mx-auto">
         <div className="h-16 flex items-center justify-between px-4">
           <Button
             variant="ghost"
-            className="text-white hover:text-white/80 transition-colors"
+            className="text-gray-200 hover:text-white/80 transition-colors"
             onClick={() => navigate(-1)}
           >
             <ArrowLeft className="mr-2 h-4 w-4" />

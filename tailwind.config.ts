@@ -20,11 +20,11 @@ export default {
     extend: {
       colors: {
         police: {
-          primary: "#4F46E5", // Indigo mais moderno
-          secondary: "#818CF8", // Indigo mais claro
-          accent: "#6366F1", // Tom médio
-          light: "#F8FAFC", // Fundo claro
-          dark: "#1E293B", // Azul escuro mais suave
+          primary: "#403E43", // Cinza carvão
+          secondary: "#8E9196", // Cinza neutro
+          accent: "#555555", // Cinza médio
+          light: "#F6F6F7", // Cinza claro
+          dark: "#222222", // Cinza escuro
         },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",

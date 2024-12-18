@@ -48,6 +48,10 @@ export const ApproachForm = ({ isOpen, onClose, onSubmit }: ApproachFormProps) =
         : [],
     });
     onClose();
+    toast({
+      title: "Abordagem salva",
+      description: "Os dados foram salvos com sucesso.",
+    });
   };
 
   const handleChange = (field: string, value: string) => {
@@ -79,24 +83,29 @@ export const ApproachForm = ({ isOpen, onClose, onSubmit }: ApproachFormProps) =
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl">
+      <DialogContent className="max-w-2xl bg-white">
         <DialogHeader>
-          <DialogTitle>Nova Abordagem</DialogTitle>
+          <DialogTitle className="text-police-dark">Nova Abordagem</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-6">
-          <PersonalInfoForm formData={formData} onChange={handleChange} />
-          <LocationForm formData={formData} onChange={handleChange} />
+          <div className="bg-police-light p-6 rounded-lg border border-gray-200">
+            <PersonalInfoForm formData={formData} onChange={handleChange} />
+          </div>
+
+          <div className="bg-police-light p-6 rounded-lg border border-gray-200">
+            <LocationForm formData={formData} onChange={handleChange} />
+          </div>
           
-          <div className="space-y-2">
-            <h3 className="text-sm font-medium">Informações do Veículo</h3>
+          <div className="bg-police-light p-6 rounded-lg border border-gray-200">
+            <h3 className="text-sm font-medium text-police-dark mb-4">Informações do Veículo</h3>
             <VehicleForm
               vehicle={formData.vehicle}
               onChange={handleVehicleChange}
             />
           </div>
 
-          <div className="space-y-2">
-            <label htmlFor="observations" className="text-sm font-medium">
+          <div className="bg-police-light p-6 rounded-lg border border-gray-200">
+            <label htmlFor="observations" className="text-sm font-medium text-police-dark">
               Observações
             </label>
             <Textarea
@@ -105,6 +114,7 @@ export const ApproachForm = ({ isOpen, onClose, onSubmit }: ApproachFormProps) =
               value={formData.observations}
               onChange={(e) => handleChange("observations", e.target.value)}
               rows={4}
+              className="mt-2"
             />
           </div>
 
@@ -120,7 +130,7 @@ export const ApproachForm = ({ isOpen, onClose, onSubmit }: ApproachFormProps) =
             <Button
               type="button"
               variant="outline"
-              className="w-full"
+              className="w-full bg-white hover:bg-gray-50 border-gray-200"
               onClick={handleImageCapture}
             >
               <Camera className="mr-2 h-4 w-4" />
@@ -131,17 +141,27 @@ export const ApproachForm = ({ isOpen, onClose, onSubmit }: ApproachFormProps) =
                 <img
                   src={formData.imageUrl}
                   alt="Foto capturada"
-                  className="w-full h-full object-cover rounded-lg"
+                  className="w-full h-full object-cover rounded-lg border border-gray-200"
                 />
               </div>
             )}
           </div>
 
-          <div className="flex justify-end gap-4">
-            <Button type="button" variant="outline" onClick={onClose}>
+          <div className="flex justify-end gap-4 pt-4 border-t border-gray-200">
+            <Button 
+              type="button" 
+              variant="outline" 
+              onClick={onClose}
+              className="bg-white hover:bg-gray-50 text-police-dark border-gray-200"
+            >
               Cancelar
             </Button>
-            <Button type="submit">Salvar</Button>
+            <Button 
+              type="submit"
+              className="bg-police-primary hover:bg-police-dark text-white"
+            >
+              Salvar Abordagem
+            </Button>
           </div>
         </form>
       </DialogContent>
