@@ -1,59 +1,76 @@
 const CACHE_NAME = 'police-app-v1';
-const ASSETS = [
-  './',
-  './index.html',
-  './manifest.json',
-  './favicon.ico',
-  './og-image.png',
-  './placeholder.svg',
-  './logo192.png',
-  './logo512.png'
+const STATIC_ASSETS = [
+  '/',
+  '/index.html',
+  '/manifest.json',
+  '/favicon.ico',
+  '/logo192.png',
+  '/logo512.png',
+  '/src/main.tsx',
+  '/src/index.css'
 ];
 
-// Instalação e cache inicial
+// Install event - cache static assets
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => {
-        console.log('Cache aberto');
-        return cache.addAll(ASSETS);
+        return cache.addAll(STATIC_ASSETS);
       })
   );
   self.skipWaiting();
 });
 
-// Limpeza de caches antigos
+// Activate event - clean up old caches
 self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then((keys) => {
+    caches.keys().then((cacheNames) => {
       return Promise.all(
-        keys.filter(key => key !== CACHE_NAME)
-          .map(key => caches.delete(key))
+        cacheNames.map((cacheName) => {
+          if (cacheName !== CACHE_NAME) {
+            return caches.delete(cacheName);
+          }
+        })
       );
     })
   );
   self.clients.claim();
 });
 
-// Estratégia offline-first
+// Fetch event - network first, then cache
 self.addEventListener('fetch', (event) => {
+  // Skip cross-origin requests
+  if (!event.request.url.startsWith(self.location.origin)) {
+    return;
+  }
+
   event.respondWith(
-    caches.match(event.request)
+    fetch(event.request)
       .then((response) => {
-        if (response) {
-          return response; // Retorna do cache se disponível
-        }
-        return fetch(event.request)
+        // Clone the response before caching
+        const responseToCache = response.clone();
+
+        caches.open(CACHE_NAME)
+          .then((cache) => {
+            // Cache successful responses
+            if (event.request.method === 'GET') {
+              cache.put(event.request, responseToCache);
+            }
+          });
+
+        return response;
+      })
+      .catch(() => {
+        // If network fails, try to get from cache
+        return caches.match(event.request)
           .then((response) => {
-            if (!response || response.status !== 200 || response.type !== 'basic') {
+            if (response) {
               return response;
             }
-            const responseToCache = response.clone();
-            caches.open(CACHE_NAME)
-              .then((cache) => {
-                cache.put(event.request, responseToCache);
-              });
-            return response;
+            // If not in cache and network failed, return offline fallback
+            if (event.request.headers.get('accept').includes('text/html')) {
+              return caches.match('/');
+            }
           });
       })
   );
