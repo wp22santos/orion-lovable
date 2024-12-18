@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { ArrowLeft, User, FileText, MapPin, Calendar } from "lucide-react";
+import { ArrowLeft, User, FileText, MapPin, Calendar, Edit } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { RelatedApproaches } from "@/components/RelatedApproaches";
@@ -16,6 +16,7 @@ interface Person {
     cpf: string;
     nomeMae: string;
     nomePai: string;
+    profilePhoto?: string;
   };
   endereco: {
     rua: string;
@@ -35,17 +36,13 @@ const PersonProfile = () => {
     const loadPerson = async () => {
       if (!id) return;
       try {
-        console.log("Carregando dados da pessoa:", id);
         const approaches = await indexedDBService.getApproaches();
-        console.log("Abordagens encontradas:", approaches);
-        
         let foundPerson = null;
-        // Encontrar a pessoa em todas as abordagens
+        
         for (const approach of approaches) {
           if (approach.pessoas) {
             foundPerson = approach.pessoas.find(p => p.id === id);
             if (foundPerson) {
-              console.log("Pessoa encontrada:", foundPerson);
               setPerson(foundPerson);
               break;
             }
@@ -53,7 +50,6 @@ const PersonProfile = () => {
         }
         
         if (!foundPerson) {
-          console.log("Pessoa não encontrada");
           toast.error("Pessoa não encontrada");
           navigate("/");
         }
@@ -103,9 +99,9 @@ const PersonProfile = () => {
         <Card className="p-6">
           <div className="flex items-center gap-4 mb-6">
             <div className="w-24 h-24 rounded-full bg-gray-200 overflow-hidden">
-              {person.dados.foto ? (
+              {person.dados.profilePhoto ? (
                 <img
-                  src={person.dados.foto}
+                  src={person.dados.profilePhoto}
                   alt={person.dados.nome}
                   className="w-full h-full object-cover"
                 />
@@ -115,7 +111,7 @@ const PersonProfile = () => {
                 </div>
               )}
             </div>
-            <div>
+            <div className="flex-1">
               <h1 className="text-2xl font-bold">{person.dados.nome}</h1>
               <div className="text-gray-600 mt-1">
                 <div className="flex items-center gap-2">
@@ -124,6 +120,14 @@ const PersonProfile = () => {
                 </div>
               </div>
             </div>
+            <Button
+              variant="outline"
+              onClick={() => navigate(`/edit-person/${id}`)}
+              className="flex items-center gap-2"
+            >
+              <Edit className="w-4 h-4" />
+              Editar Perfil
+            </Button>
           </div>
 
           <div className="grid gap-6">
