@@ -23,18 +23,30 @@ export const LocationForm = ({ formData, onChange }: LocationFormProps) => {
     neighborhood: "",
   });
 
+  // Solicita localização ao montar o componente
   useEffect(() => {
-    // Request GPS permission on component mount
-    if ('permissions' in navigator) {
-      navigator.permissions.query({ name: 'geolocation' }).then((result) => {
-        if (result.state === 'prompt') {
-          toast.info('Por favor, permita o acesso à sua localização para melhor precisão.');
+    const requestLocationOnMount = async () => {
+      try {
+        if ('permissions' in navigator) {
+          const permission = await navigator.permissions.query({ name: 'geolocation' });
+          
+          if (permission.state === 'granted') {
+            handleGetLocation();
+          } else if (permission.state === 'prompt') {
+            toast.info('Por favor, permita o acesso à sua localização para melhor precisão.');
+          }
         }
-      });
-    }
+      } catch (error) {
+        console.error("Erro ao verificar permissão:", error);
+      }
+    };
+
+    requestLocationOnMount();
   }, []);
 
   const handleGetLocation = async () => {
+    if (isLoadingLocation) return; // Evita múltiplas chamadas
+
     try {
       setIsLoadingLocation(true);
       const location = await getLocation();
@@ -43,9 +55,15 @@ export const LocationForm = ({ formData, onChange }: LocationFormProps) => {
         onChange("latitude", location.latitude);
         onChange("longitude", location.longitude);
         
+        // Usa OpenStreetMap para reverse geocoding
         const response = await fetch(
           `https://nominatim.openstreetmap.org/reverse?format=json&lat=${location.latitude}&lon=${location.longitude}`
         );
+        
+        if (!response.ok) {
+          throw new Error('Falha ao obter endereço');
+        }
+
         const data = await response.json();
         
         if (data.address) {
@@ -59,7 +77,8 @@ export const LocationForm = ({ formData, onChange }: LocationFormProps) => {
             neighborhood,
           });
           
-          onChange("address", `${street}, ${number} - ${neighborhood}`);
+          const fullAddress = `${street}, ${number} - ${neighborhood}`.trim();
+          onChange("address", fullAddress);
           toast.success("Localização obtida com sucesso!");
         }
       }
@@ -77,8 +96,12 @@ export const LocationForm = ({ formData, onChange }: LocationFormProps) => {
       [field]: value,
     }));
     
-    const fullAddress = `${addressDetails.street}, ${addressDetails.number} - ${addressDetails.neighborhood}`;
-    onChange("address", fullAddress);
+    // Atualiza o endereço completo apenas quando todos os campos necessários estiverem preenchidos
+    const { street, number, neighborhood } = addressDetails;
+    if (street || number || neighborhood) {
+      const fullAddress = `${street}, ${number} - ${neighborhood}`.trim();
+      onChange("address", fullAddress);
+    }
   };
 
   return (

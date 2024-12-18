@@ -10,7 +10,7 @@ const ASSETS = [
   '/logo512.png'
 ];
 
-// Pre-cache assets during installation
+// Cache assets during installation
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME)
