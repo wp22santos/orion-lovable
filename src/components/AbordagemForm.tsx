@@ -66,7 +66,7 @@ export const AbordagemForm = () => {
       }
 
       const dataAtual = new Date().toISOString();
-      const mainPerson = pessoas[0]; // Usando a primeira pessoa como principal
+      const mainPerson = pessoas[0];
 
       const abordagem = {
         id: crypto.randomUUID(),
@@ -122,19 +122,19 @@ export const AbordagemForm = () => {
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-6 space-y-6">
-      <Card className="bg-[#141829] border-[#2A2F45] p-6">
-        <h2 className="text-white text-lg font-medium mb-4">
+      <Card className="bg-white border border-gray-200 p-6 shadow-sm">
+        <h2 className="text-gray-900 text-lg font-medium mb-4">
           Localização da Abordagem
         </h2>
         <LocationForm formData={location} onChange={handleLocationChange} />
       </Card>
 
-      <Card className="bg-[#141829] border-[#2A2F45] p-6">
+      <Card className="bg-white border border-gray-200 p-6 shadow-sm">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-white text-lg font-medium">Pessoas Abordadas</h2>
+          <h2 className="text-gray-900 text-lg font-medium">Pessoas Abordadas</h2>
           <Button
             onClick={() => setShowPersonForm(true)}
-            className="bg-blue-600 hover:bg-blue-700"
+            className="bg-blue-600 hover:bg-blue-700 text-white"
           >
             <Plus className="w-4 h-4 mr-2" />
             Adicionar Pessoa
@@ -151,7 +151,7 @@ export const AbordagemForm = () => {
         {pessoas.length > 0 && (
           <div className="space-y-4 mt-4">
             {pessoas.map((person) => (
-              <Card key={person.id} className="bg-[#1A1F35] p-4 text-white">
+              <Card key={person.id} className="bg-gray-50 p-4">
                 <div className="flex items-center space-x-4">
                   {person.photos?.[0] && (
                     <img
@@ -161,9 +161,9 @@ export const AbordagemForm = () => {
                     />
                   )}
                   <div>
-                    <h3 className="font-medium">{person.name}</h3>
-                    <p className="text-gray-300 text-sm">RG: {person.rg}</p>
-                    <p className="text-gray-300 text-sm">CPF: {person.cpf}</p>
+                    <h3 className="font-medium text-gray-900">{person.name}</h3>
+                    <p className="text-gray-600 text-sm">RG: {person.rg}</p>
+                    <p className="text-gray-600 text-sm">CPF: {person.cpf}</p>
                   </div>
                 </div>
               </Card>
