@@ -35,6 +35,7 @@ export interface Approach {
   endereco: Endereco;
   latitude: number;
   longitude: number;
+  observations?: string;
   pessoas: {
     id: string;
     dados: {
@@ -79,12 +80,10 @@ class IndexedDBService {
         console.log("Atualizando estrutura do banco de dados");
         const db = (event.target as IDBOpenDBRequest).result;
         
-        // Delete existing store if it exists
         if (db.objectStoreNames.contains('approaches')) {
           db.deleteObjectStore('approaches');
         }
         
-        // Create new store with updated schema
         const store = db.createObjectStore('approaches', { keyPath: 'id' });
         store.createIndex('date', 'date', { unique: false });
         console.log("Store 'approaches' criada/atualizada com sucesso");

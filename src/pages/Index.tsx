@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Search, Plus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { indexedDBService } from "@/services/indexedDB";
+import { indexedDBService, type Approach } from "@/services/indexedDB";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { ApproachList } from "@/components/ApproachList";
@@ -41,8 +41,8 @@ const Index = () => {
     navigate(`/approach/${id}`);
   };
 
-  const mappedApproaches = filteredApproaches.map((approach) => ({
-    id: approach.id,
+  const mappedApproaches: Approach[] = filteredApproaches.map((approach) => ({
+    ...approach,
     name: approach.pessoas[0]?.dados.nome || "Sem nome",
     date: new Date(approach.date).toLocaleDateString(),
     location: approach.location || approach.address || "Localização não informada",
