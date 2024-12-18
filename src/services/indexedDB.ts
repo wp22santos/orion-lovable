@@ -1,61 +1,5 @@
 import { backupService } from './backupService';
-
-export interface ApproachedPerson {
-  id: string;
-  name: string;
-  motherName: string;
-  rg: string;
-  cpf: string;
-  photos: string[];
-}
-
-export interface Endereco {
-  rua: string;
-  numero: string;
-  bairro: string;
-  complemento: string;
-}
-
-export interface VehicleInfo {
-  plate: string;
-  brand: string;
-  color: string;
-  observations: string;
-}
-
-export interface Approach {
-  id: string;
-  name: string;
-  date: string;
-  location: string;
-  motherName: string;
-  rg: string;
-  cpf: string;
-  address: string;
-  data: string;
-  imageUrl?: string;
-  endereco: Endereco;
-  latitude: number;
-  longitude: number;
-  observations?: string;
-  pessoas: {
-    id: string;
-    dados: {
-      foto: string;
-      nome: string;
-      dataNascimento: string;
-      rg: string;
-      cpf: string;
-      nomeMae: string;
-      nomePai: string;
-      endereco?: string;
-    };
-    endereco: Endereco;
-    veiculo: VehicleInfo;
-    observacoes: string;
-  }[];
-  companions?: string[];
-}
+import { Approach } from '@/types/person';
 
 class IndexedDBService {
   private dbName = 'policeRecordsDB';
@@ -75,6 +19,14 @@ class IndexedDBService {
       request.onsuccess = () => {
         console.log("Banco de dados aberto com sucesso");
         this.db = request.result;
+        
+        // Configurar para persistência
+        if (navigator.storage && navigator.storage.persist) {
+          navigator.storage.persist().then(isPersisted => {
+            console.log(`Persistência de armazenamento ${isPersisted ? 'concedida' : 'negada'}`);
+          });
+        }
+        
         resolve();
       };
 
