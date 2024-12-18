@@ -69,6 +69,7 @@ const Index = () => {
   );
 
   const handlePersonClick = (personId: string) => {
+    console.log("Navegando para pessoa:", personId);
     navigate(`/person/${personId}`);
   };
 
