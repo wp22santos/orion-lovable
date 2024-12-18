@@ -6,6 +6,7 @@ import { PhotoCapture } from "./PhotoCapture";
 import { useToast } from "@/hooks/use-toast";
 import { Card } from "@/components/ui/card";
 import { X, Camera } from "lucide-react";
+import { Input } from "./ui/input";
 
 interface ApproachedPerson {
   id: string;
@@ -14,6 +15,12 @@ interface ApproachedPerson {
   rg: string;
   cpf: string;
   photos: string[];
+  endereco?: {
+    rua: string;
+    numero: string;
+    bairro: string;
+    complemento: string;
+  };
 }
 
 interface ApproachedPersonFormProps {
@@ -31,12 +38,23 @@ export const ApproachedPersonForm = ({ onSave, onCancel, existingPerson }: Appro
     rg: existingPerson?.rg || "",
     cpf: existingPerson?.cpf || "",
   });
+  const [endereco, setEndereco] = useState(existingPerson?.endereco || {
+    rua: "",
+    numero: "",
+    bairro: "",
+    complemento: "",
+  });
 
   const handleChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
+  const handleEnderecoChange = (field: string, value: string) => {
+    setEndereco(prev => ({ ...prev, [field]: value }));
+  };
+
   const handlePersonFound = (person: any) => {
+    console.log("Pessoa encontrada:", person);
     setFormData({
       name: person.name,
       motherName: person.motherName,
@@ -44,8 +62,12 @@ export const ApproachedPersonForm = ({ onSave, onCancel, existingPerson }: Appro
       cpf: person.cpf,
     });
     
-    if (person.pessoas?.[0]?.dados?.foto) {
-      setPhotos([person.pessoas[0].dados.foto]);
+    if (person.photos?.length > 0) {
+      setPhotos(person.photos);
+    }
+
+    if (person.endereco) {
+      setEndereco(person.endereco);
     }
   };
 
@@ -64,6 +86,7 @@ export const ApproachedPersonForm = ({ onSave, onCancel, existingPerson }: Appro
       id: existingPerson?.id || crypto.randomUUID(),
       ...formData,
       photos,
+      endereco,
     });
   };
 
@@ -89,6 +112,44 @@ export const ApproachedPersonForm = ({ onSave, onCancel, existingPerson }: Appro
           <div className="space-y-6">
             <PersonalInfoForm formData={formData} onChange={handleChange} />
             
+            <div className="space-y-4">
+              <h4 className="font-medium text-gray-700">Endereço</h4>
+              <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
+                <div className="md:col-span-4">
+                  <Input
+                    placeholder="Rua"
+                    value={endereco.rua}
+                    onChange={(e) => handleEnderecoChange("rua", e.target.value)}
+                    className="bg-white/50"
+                  />
+                </div>
+                <div className="md:col-span-2">
+                  <Input
+                    placeholder="Número"
+                    value={endereco.numero}
+                    onChange={(e) => handleEnderecoChange("numero", e.target.value)}
+                    className="bg-white/50"
+                  />
+                </div>
+                <div className="md:col-span-4">
+                  <Input
+                    placeholder="Bairro"
+                    value={endereco.bairro}
+                    onChange={(e) => handleEnderecoChange("bairro", e.target.value)}
+                    className="bg-white/50"
+                  />
+                </div>
+                <div className="md:col-span-2">
+                  <Input
+                    placeholder="Complemento"
+                    value={endereco.complemento}
+                    onChange={(e) => handleEnderecoChange("complemento", e.target.value)}
+                    className="bg-white/50"
+                  />
+                </div>
+              </div>
+            </div>
+
             <div className="space-y-4">
               <PhotoCapture photos={photos} onPhotosChange={setPhotos} />
               {photos.length === 0 && (
