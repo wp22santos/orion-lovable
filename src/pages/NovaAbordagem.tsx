@@ -117,6 +117,16 @@ const NovaAbordagem = () => {
       const dataAtual = new Date().toISOString();
       const abordagem = {
         id: crypto.randomUUID(),
+        name: pessoasSelecionadas[0]?.dados.nome || "",
+        date: dataAtual,
+        location: `${endereco.rua}, ${endereco.numero} - ${endereco.bairro}`,
+        motherName: pessoasSelecionadas[0]?.dados.nomeMae || "",
+        rg: pessoasSelecionadas[0]?.dados.rg || "",
+        cpf: pessoasSelecionadas[0]?.dados.cpf || "",
+        address: `${endereco.rua}, ${endereco.numero} - ${endereco.bairro}`,
+        observations: pessoasSelecionadas[0]?.observacoes || "",
+        companions: pessoasSelecionadas.slice(1).map(p => p.dados.nome),
+        imageUrl: pessoasSelecionadas[0]?.dados.foto,
         data: dataAtual,
         endereco: endereco,
         pessoas: pessoasSelecionadas,
